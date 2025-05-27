@@ -24,7 +24,7 @@ public class PostService {
          */
         User foundUser = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("email 을 확인해주세요."));
 
-        return PostResponseDto.from(Post.create(cDto.getTitle(), cDto.getContent(), foundUser));
+        return PostResponseDto.from(postRepository.save(Post.create(cDto.getTitle(), cDto.getContent(), foundUser)));
     }
 
 }
