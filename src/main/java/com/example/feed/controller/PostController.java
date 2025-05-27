@@ -4,6 +4,7 @@ import com.example.feed.dto.common.ApiResponse;
 import com.example.feed.dto.post.request.CreatePostRequestDto;
 import com.example.feed.dto.post.response.PostResponseDto;
 import com.example.feed.service.PostService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<PostResponseDto>> save(
-            @RequestBody CreatePostRequestDto cDto,
+            @Valid @RequestBody CreatePostRequestDto cDto,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         String email = userDetails.getUsername();
