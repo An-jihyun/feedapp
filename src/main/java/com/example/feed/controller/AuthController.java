@@ -22,4 +22,9 @@ public class AuthController {
         String token = authService.login(request.getEmail(), request.getPassword());
         return ResponseEntity.ok(new LoginResponseDto(token));
     }
+    @PostMapping("/signup")
+    public ResponseEntity<String> signup(@RequestBody LoginRequestDto request) {
+        authService.signup(request);
+        return ResponseEntity.ok("회원가입 성공!");
+    }
 }
