@@ -1,11 +1,20 @@
 package com.example.feed.dto.common;
 
-import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-@AllArgsConstructor
+import java.time.LocalDateTime;
+
+@Getter
 public class ApiResponse<T> {
 
     private String message;
     private T responseDto;
+    private LocalDateTime timestamp;
+
+    public ApiResponse(String message, T responseDto) {
+        this.message = message;
+        this.responseDto = responseDto;
+        this.timestamp = LocalDateTime.now();
+    }
 
 }
