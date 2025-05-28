@@ -36,6 +36,7 @@ public class PostService {
     public PostResponseDto update(Long id, UserDetails userDetails, UpdatePostRequestDto uDto) {
         //로그인 한 User 엔티티
         User foundUser = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(() -> new UserNotFoundException("정보와 일치하는 유저가 없습니다."));
+        //id 값으로 게시물 조회
         Post foundPost = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("게시물 id를 확인해주세요."));
 
         //로그인한 User 가 작성한 포스팅인지 검증 로직(인가)
@@ -47,5 +48,9 @@ public class PostService {
         foundPost.patchCheck(uDto);
 
         return PostResponseDto.from(foundPost);
+    }
+
+    public PostResponseDto findById(Long id) {
+        return PostResponseDto.from(postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("게시물 id를 확인해주세요.")));
     }
 }

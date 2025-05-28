@@ -37,4 +37,12 @@ public class PostController {
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 저장되었습니다.", postService.update(id, userDetails, uDto)), HttpStatus.OK);
     }
 
+    //post 식별자를 사용한 단건 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<PostResponseDto>> findById(
+            @PathVariable Long id
+    ) {
+        return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 저장되었습니다.", postService.findById(id)), HttpStatus.OK);
+    }
+
 }
