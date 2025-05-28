@@ -17,7 +17,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 @Service
@@ -75,11 +77,13 @@ public class PostService {
         return foundPost;
     }
 
-    public Page<PostResponseDto> findPagedPostsByPeriod(Pageable pageable, LocalDateTime periodStart, LocalDateTime periodEnd) {
+    public Page<PostResponseDto> findPagedPostsByPeriod(Pageable pageable, LocalDate periodStart, LocalDate periodEnd) {
         //예외?처리 날짜를 설정하지 않았을 시 전체 페이징 데이터 조회
         if(periodStart == null || periodEnd == null) {
             return postRepository.findAll(pageable).map(PostResponseDto::from);
         }
-        return postRepository.findByCreatedAtBetween(periodStart, periodEnd, pageable).map(PostResponseDto::from);
+
+        //LocalDate -> Time 을 붙여 LocalDateTime 형식으로 바꿔주기
+        return postRepository.findByCreatedAtBetween(periodStart.atStartOfDay(), periodEnd.atTime(LocalTime.MAX), pageable).map(PostResponseDto::from);
     }
 }
