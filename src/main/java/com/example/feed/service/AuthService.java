@@ -46,7 +46,7 @@ public class AuthService {
     @Transactional
     public void logout(String token) {
         if (token == null || !jwtTokenProvider.validateToken(token)) {
-            throw new CustomUnauthorizedException("Invalid or missing token");
+            throw new CustomUnauthorizedException("토큰이 없거나 유효하지 않습니다.");
         }
         LocalDateTime expiration = jwtTokenProvider.getExpiration(token);
         TokenBlacklist blacklist = new TokenBlacklist(token, expiration);
