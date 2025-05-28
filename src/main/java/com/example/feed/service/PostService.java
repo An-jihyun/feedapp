@@ -12,8 +12,13 @@ import com.example.feed.repository.PostRepository;
 import com.example.feed.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -68,5 +73,13 @@ public class PostService {
         }
 
         return foundPost;
+    }
+
+    public Page<PostResponseDto> findPagedPostsByPeriod(Pageable pageable, LocalDateTime periodStart, LocalDateTime periodEnd) {
+        //예외?처리 날짜를 설정하지 않았을 시 전체 페이징 데이터 조회
+        if(periodStart == null || periodEnd == null) {
+            return postRepository.findAll(pageable).map(PostResponseDto::from);
+        }
+        return postRepository.findByCreatedAtBetween(periodStart, periodEnd, pageable).map(PostResponseDto::from);
     }
 }
