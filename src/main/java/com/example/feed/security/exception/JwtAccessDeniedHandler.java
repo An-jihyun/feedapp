@@ -1,4 +1,4 @@
-package com.example.feed.config;
+package com.example.feed.security.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
