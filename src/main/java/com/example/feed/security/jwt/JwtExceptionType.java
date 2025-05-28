@@ -1,4 +1,4 @@
-package com.example.feed.jwt;
+package com.example.feed.security.jwt;
 
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package com.example.feed.config;
+package com.example.feed.security.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

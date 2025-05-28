@@ -4,7 +4,7 @@ import com.example.feed.dto.logIn.LoginRequestDto;
 import com.example.feed.entity.TokenBlacklist;
 import com.example.feed.entity.User;
 import com.example.feed.exception.CustomUnauthorizedException;
-import com.example.feed.jwt.JwtTokenProvider;
+import com.example.feed.security.jwt.JwtTokenProvider;
 import com.example.feed.repository.TokenBlacklistRepository;
 import com.example.feed.repository.UserRepository;
 import jakarta.transaction.Transactional;

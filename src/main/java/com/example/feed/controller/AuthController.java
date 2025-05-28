@@ -2,7 +2,7 @@ package com.example.feed.controller;
 
 import com.example.feed.dto.logIn.LoginRequestDto;
 import com.example.feed.dto.logIn.LoginResponseDto;
-import com.example.feed.jwt.JwtTokenProvider;
+import com.example.feed.security.jwt.JwtTokenProvider;
 import com.example.feed.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

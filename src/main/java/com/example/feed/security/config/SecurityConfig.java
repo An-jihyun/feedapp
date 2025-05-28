@@ -1,7 +1,9 @@
-package com.example.feed.config;
+package com.example.feed.security.config;
 
-import com.example.feed.jwt.JwtAuthenticationFilter;
-import com.example.feed.jwt.JwtTokenProvider;
+import com.example.feed.security.exception.JwtAccessDeniedHandler;
+import com.example.feed.security.exception.JwtAuthenticationEntryPoint;
+import com.example.feed.security.filter.JwtAuthenticationFilter;
+import com.example.feed.security.jwt.JwtTokenProvider;
 import com.example.feed.repository.TokenBlacklistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

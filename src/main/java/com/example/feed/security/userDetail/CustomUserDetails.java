@@ -1,4 +1,4 @@
-package com.example.feed.security;
+package com.example.feed.security.userDetail;
 
 import com.example.feed.entity.User;
 import org.springframework.security.core.GrantedAuthority;

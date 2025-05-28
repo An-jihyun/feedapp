@@ -1,4 +1,4 @@
-package com.example.feed.jwt;
+package com.example.feed.security.jwt;
 
 import com.example.feed.entity.TokenBlacklist;
 import com.example.feed.repository.TokenBlacklistRepository;

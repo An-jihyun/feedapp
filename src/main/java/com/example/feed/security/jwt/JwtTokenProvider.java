@@ -1,6 +1,6 @@
-package com.example.feed.jwt;
+package com.example.feed.security.jwt;
 
-import com.example.feed.security.CustomUserDetailsService;
+import com.example.feed.security.userDetail.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
