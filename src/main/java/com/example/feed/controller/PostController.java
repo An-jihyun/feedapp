@@ -18,8 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.LocalDate;
 
 @RequestMapping("/api/posts")
 @RestController
@@ -52,10 +51,11 @@ public class PostController {
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 삭제되었습니다.", null), HttpStatus.OK);
     }
 
+    //게시물 전체 조회 페이지네이션, 검색조건(시작, 종료일) 포함
     @GetMapping
     public ResponseEntity<ApiResponse<Page<PostResponseDto>>> findPagedPostsByPeriod(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
-            @DateTimeFormat(pattern = "yyyyMMdd") LocalDateTime periodStart, @DateTimeFormat(pattern = "yyyyMMdd") LocalDateTime periodEnd
+            @DateTimeFormat(pattern = "yyyyMMdd") LocalDate periodStart, @DateTimeFormat(pattern = "yyyyMMdd") LocalDate periodEnd
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 조회되었습니다.", postService.findPagedPostsByPeriod(pageable, periodStart, periodEnd)), HttpStatus.OK);
