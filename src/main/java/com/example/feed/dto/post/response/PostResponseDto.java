@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PostResponseDto {
 
+    private Long id;
     private String title;
     private String content;
 
@@ -25,6 +26,6 @@ public class PostResponseDto {
 
     //entity -> dto
     public static PostResponseDto from(Post post) {
-        return new PostResponseDto(post.getTitle(), post.getContent(), post.getUser().getId(), post.getCreatedAt(), post.getModifiedAt());
+        return new PostResponseDto(post.getId(), post.getTitle(), post.getContent(), post.getUser().getId(), post.getCreatedAt(), post.getModifiedAt());
     }
 }
