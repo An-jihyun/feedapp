@@ -10,6 +10,7 @@ import com.example.feed.security.userDetail.CustomUserDetails;
 import com.example.feed.service.AuthService;
 import com.example.feed.service.FollowService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -38,7 +39,7 @@ public class FollowController {
         return new ResponseEntity<>(new ApiResponse<>("팔로우정상완료",followed),HttpStatus.CREATED);
     }
 
-    //팔로잉 조회
+    //팔로잉 전체조회
     @GetMapping("/{userId}/followings")
     public ResponseEntity<ApiResponse<List<FollowingListResponseDto>>> findFollowsListByUserId(
             @PathVariable Long userId
@@ -47,13 +48,34 @@ public class FollowController {
 
         return new  ResponseEntity<>(new ApiResponse<>("팔로잉목록조회성공",followingList),HttpStatus.OK);
     }
-    //팔로워 조회
+
+    //팔로잉 단건 조회
+    @GetMapping("/{userId}/following/{followingId}")
+    public ResponseEntity<ApiResponse<FollowsResponseDto>> findByIdFollowingUser(
+            @PathVariable Long userId,
+            @PathVariable Long followingId) {
+        FollowsResponseDto userIdAndFollowingUserId = followService.findByfollowingUser(userId, followingId);
+        return new ResponseEntity<> (new ApiResponse<>("팔로잉 조회 성공",userIdAndFollowingUserId),HttpStatus.OK);
+
+    }
+    //팔로워 전체 조회
     @GetMapping("/{userId}/followers")
     public ResponseEntity<ApiResponse<List<FollowingListResponseDto>>> findFollowerListByUserId(@PathVariable Long userId) {
         List<FollowingListResponseDto> followersList = followService.findfollowerListByUserId(userId);
 
         return new ResponseEntity<>(new ApiResponse<>("팔로워목록조회성공",followersList),HttpStatus.OK );
     }
+
+    //팔로워 단건 조회
+    @GetMapping("/{userId}/followers/{followerId}")
+    public ResponseEntity<ApiResponse<FollowsResponseDto>> findByFollowerUser(
+            @PathVariable Long userId,
+            @PathVariable Long followerId
+    ) {
+        FollowsResponseDto followerUser = followService.findByFollowerUser(userId, followerId);
+        return new ResponseEntity<>(new ApiResponse<>("팔로워 조회 성공",followerUser),HttpStatus.OK);
+    }
+
     //팔로우 삭제
     @DeleteMapping("/follows")
     public ResponseEntity<ApiResponse<Void>> deleteFollowers(

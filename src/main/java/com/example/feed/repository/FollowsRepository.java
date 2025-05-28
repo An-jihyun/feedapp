@@ -14,7 +14,6 @@ public interface FollowsRepository extends JpaRepository<Follow,Long> {
     //팔로워 목록 조회
     List<Follow> findByFollowingId(Long followingId);
 
-    Optional<Follow> findByUserName(String username);
 
-    Follow findByUnFollows(Optional<Follow> follower, Optional<Follow> unfollowUserName);
+    Optional<Follow> findByFollowerIdAndFollowingId(Long userId, Long followerId);
 }
