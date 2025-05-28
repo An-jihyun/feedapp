@@ -1,10 +1,15 @@
 package com.example.feed.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -27,17 +32,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 요청 헤더에서 JWT 토큰 추출
         String token = resolveToken(request);
 
-        // 토큰이 있고 유효하면 인증 처리
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-
-            // 토큰으로부터 인증 정보(Authentication) 객체 생성
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-
-            // SecurityContext에 인증 정보를 저장해, 이후 인증된 사용자로 인식되도록 함
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            if (token != null && jwtTokenProvider.validateToken(token)) {
+                Authentication auth = jwtTokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
+        } catch (SecurityException e) {
+            throw new BadCredentialsException("INVALID_SIGNATURE", e);
+        } catch (MalformedJwtException e) {
+            throw new BadCredentialsException("MALFORMED_TOKEN", e);
+        } catch (ExpiredJwtException e) {
+            throw new CredentialsExpiredException("EXPIRED_TOKEN", e);
+        } catch (UnsupportedJwtException e) {
+            throw new BadCredentialsException("UNSUPPORTED_TOKEN", e);
+        } catch (IllegalArgumentException e) {
+            throw new BadCredentialsException("EMPTY_TOKEN", e);
         }
 
-        // 다음 필터(혹은 최종 리소스)로 요청과 응답 객체 전달
         filterChain.doFilter(request, response);
     }
 

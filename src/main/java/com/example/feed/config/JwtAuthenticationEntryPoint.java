@@ -1,5 +1,6 @@
 package com.example.feed.config;
 
+import com.example.feed.jwt.JwtExceptionType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
@@ -16,11 +17,17 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
 
-        // 응답 코드 401 Unauthorized, JSON 메시지 리턴 등 커스텀 가능
-        response.setContentType("application/json;charset=UTF-8");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        String errorCode = authException.getMessage();
+        JwtExceptionType exceptionType;
 
-        String json = "{\"error\": \"Unauthorized\", \"message\": \"" + authException.getMessage() + "\"}";
-        response.getWriter().write(json);
+        try {
+            exceptionType = JwtExceptionType.valueOf(errorCode);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            exceptionType = JwtExceptionType.AUTHENTICATION_REQUIRED;
+        }
+
+        response.setStatus(exceptionType.getStatus());
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write("{\"error\": \"" + exceptionType.getMessage() + "\"}");
     }
 }
