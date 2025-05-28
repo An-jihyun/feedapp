@@ -1,10 +1,12 @@
 package com.example.feed.dto.common;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
 
     private String message;
