@@ -38,22 +38,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
 
         try {
-            if (token == null) {
-                log.debug("인증 토큰 없음: {}", requestURI);
-                // 예외 던지지 않고 다음 필터로 넘어감 → 익명 사용자로 간주
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            if (jwtTokenProvider.validateToken(token)) {
+            if (token != null && jwtTokenProvider.validateToken(token)) {
 
                 if (blacklistRepository.existsByToken(token)) {
                     log.warn("블랙리스트 토큰 접근 시도: {}", requestURI);
                     throw new BadCredentialsException(JwtExceptionType.LOGGED_OUT_TOKEN.name());
                 }
 
-                Authentication auth = jwtTokenProvider.getAuthentication(token);
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else if (token == null) {
+                log.debug("인증 토큰 없음: {}", requestURI);
             }
 
         } catch (SecurityException e) {
