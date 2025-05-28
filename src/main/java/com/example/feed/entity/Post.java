@@ -1,5 +1,6 @@
 package com.example.feed.entity;
 
+import com.example.feed.dto.post.request.UpdatePostRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +35,21 @@ public class Post extends BaseEntity {
     //메서드로만 생성
     public static Post create(String title, String content, User user) {
         return new Post(title, content, user);
+    }
+
+    /*
+    업데이트 요청객체를 받아 null 값이 아닌 필드를 변경해주는 메서드
+    */
+    public void patchCheck(UpdatePostRequestDto uDto) {
+
+        if(uDto.getTitle() != null) {
+            this.title = uDto.getTitle();
+        }
+
+        if(uDto.getContent() != null) {
+            this.content = uDto.getContent();
+        }
+
     }
 
 }
