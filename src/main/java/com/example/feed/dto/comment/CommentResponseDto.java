@@ -14,14 +14,14 @@ public class CommentResponseDto {
     private String content;
     private String userName;
     private LocalDateTime createdAt;
-    private boolean edited;
+    private LocalDateTime modifiedAt;
 
     public CommentResponseDto(Comment comment) {
         this.id = comment.getId();
         this.content = comment.getContent();
         this.userName = comment.getUser().getUserName();
         this.createdAt = comment.getCreatedAt();
-        this.edited = !comment.getCreatedAt().equals(comment.getModifiedAt());
+        this.modifiedAt = comment.getModifiedAt();
     }
 
     public static CommentResponseDto from(Comment comment) {
