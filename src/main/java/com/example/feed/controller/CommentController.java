@@ -9,7 +9,9 @@ import com.example.feed.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,26 +39,34 @@ public class CommentController {
     @GetMapping("/posts/{postId}/comments")
     public ResponseEntity<ApiResponse<Page<CommentResponseDto>>> getCommentsByPost(
             @PathVariable Long postId,
-            Pageable pageable) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
         Page<CommentResponseDto> responseDto = commentService.getCommentsByPost(postId, pageable);
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 댓글이 조회되었습니다.", responseDto), HttpStatus.OK);
     }
 
-
-
     @GetMapping("/users/me/comments")
     public ResponseEntity<ApiResponse<Page<CommentResponseDto>>> getMyComments(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            Pageable pageable) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
         Page<CommentResponseDto> responseDto = commentService.getCommentsByUser(userDetails.getUserId(), pageable);
         return new ResponseEntity<>(new ApiResponse<>("내 댓글 목록이 조회되었습니다.", responseDto), HttpStatus.OK);
     }
 
     @GetMapping("/users/{userId}/comments")
-    public ResponseEntity<Page<CommentResponseDto>> getCommentsByUserId(
+    public ResponseEntity<ApiResponse<Page<CommentResponseDto>>> getCommentsByUserId(
             @PathVariable Long userId,
-            Pageable pageable) {
-        return ResponseEntity.ok(commentService.getCommentsByUser(userId, pageable));
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
+        Page<CommentResponseDto> responseDto = commentService.getCommentsByUser(userId, pageable);
+        return new ResponseEntity<>(new ApiResponse<>("사용자의 댓글 목록이 조회되었습니다.", responseDto), HttpStatus.OK);
     }
 
     @PatchMapping("/comments/{commentId}")
