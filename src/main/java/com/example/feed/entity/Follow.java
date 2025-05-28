@@ -8,8 +8,7 @@ import jakarta.persistence.*;
 
 //게터는 필요시 따로 생성 예정 더 확실한 캡슐화를 위해
 @Table(name = "follows")
-public class Follow { //extends BaseEntity 예정
-
+public class Follow extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "follow_id")
@@ -38,5 +37,9 @@ public class Follow { //extends BaseEntity 예정
 
     public User getFollowing() {
         return following;
+    }
+
+    public User getFollower() {
+        return follower;
     }
 }

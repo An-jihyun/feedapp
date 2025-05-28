@@ -2,6 +2,8 @@ package com.example.feed.config;
 
 import com.example.feed.jwt.JwtAuthenticationFilter;
 import com.example.feed.jwt.JwtTokenProvider;
+import com.example.feed.security.exception.JwtAccessDeniedHandler;
+import com.example.feed.security.exception.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +29,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**" , "/users/follows","/users/*/followings","/users/*/followers").permitAll() //임의로 follows 추가함- 김도한
+                        .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception
