@@ -34,15 +34,7 @@ public class PostService {
 
     @Transactional
     public PostResponseDto update(Long id, UserDetails userDetails, UpdatePostRequestDto uDto) {
-        //로그인 한 User 엔티티
-        User foundUser = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(() -> new UserNotFoundException("정보와 일치하는 유저가 없습니다."));
-        //id 값으로 게시물 조회
-        Post foundPost = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("게시물 id를 확인해주세요."));
-
-        //로그인한 User 가 작성한 포스팅인지 검증 로직(인가)
-        if(!foundUser.getId().equals(foundPost.getUser().getId())) {
-            throw new UserMismatchException("내가 작성하지 않은 게시물은 수정할 수 없습니다.");
-        }
+        Post foundPost = validateUserAccessToPost(id, userDetails);
 
         //수정 메서드( == setter) -> 더티체킹으로 save() 까지 진행
         foundPost.patchCheck(uDto);
@@ -52,5 +44,29 @@ public class PostService {
 
     public PostResponseDto findById(Long id) {
         return PostResponseDto.from(postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("게시물 id를 확인해주세요.")));
+    }
+
+    public void delete(Long id, UserDetails userDetails) {
+        Post foundPost = validateUserAccessToPost(id, userDetails);
+
+        postRepository.delete(foundPost);
+    }
+
+    /*
+    서비스 단에서 사용할 권한 확인 용 메서드 : 반복되는 로직 메서드로 처리
+    -> 리팩토링 가능성 : 인가 유틸로 구조 변경뒤 해당 유틸의 메서드로도 활용 가능 (타입변수로 받으면 다른 도메인에서도 사용가능할수도?)
+    * */
+    private Post validateUserAccessToPost(Long id, UserDetails userDetails) {
+        //로그인 한 User 엔티티
+        User foundUser = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(() -> new UserNotFoundException("정보와 일치하는 유저가 없습니다."));
+        //id 값으로 게시물 조회
+        Post foundPost = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("게시물 id를 확인해주세요."));
+
+        //로그인한 User 가 작성한 포스팅인지 검증 로직(인가)
+        if(!foundUser.getId().equals(foundPost.getUser().getId())) {
+            throw new UserMismatchException("내가 작성하지 않은 게시물은 삭제할 수 없습니다.");
+        }
+
+        return foundPost;
     }
 }
