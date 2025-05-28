@@ -3,7 +3,7 @@ package com.example.feed.controller;
 import com.example.feed.dto.comment.CommentResponseDto;
 import com.example.feed.dto.comment.CreateCommentRequestDto;
 import com.example.feed.dto.comment.UpdateCommentRequestDto;
-import com.example.feed.security.CustomUserDetails;
+import com.example.feed.security.userDetail.CustomUserDetails;
 import com.example.feed.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
