@@ -19,16 +19,18 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    // 댓글 생성 (게시글 기준)
+
     @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<CommentResponseDto> create(
             @PathVariable Long postId,
-            @RequestBody CreateCommentRequestDto dto,
+            @RequestBody CreateCommentRequestDto requestDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ResponseEntity.ok(commentService.createComment(postId, dto, userDetails.getUserId()));
+
+        CommentResponseDto responseDto = commentService.createComment(postId, requestDto, userDetails.getUserId());
+        return ResponseEntity.status(201).body(responseDto);
     }
 
-    // 게시글 기준 댓글 조회
+
     @GetMapping("/posts/{postId}/comments")
     public ResponseEntity<Page<CommentResponseDto>> getCommentsByPost(
             @PathVariable Long postId,
@@ -36,17 +38,21 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getCommentsByPost(postId, pageable));
     }
 
-    // 댓글 조회 (내 댓글 or 특정 유저 댓글)
-    @GetMapping("/comments")
-    public ResponseEntity<Page<CommentResponseDto>> getCommentsByUser(
-            @RequestParam("userId") String userIdParam,
+
+    @GetMapping("/users/me/comments")
+    public ResponseEntity<Page<CommentResponseDto>> getMyComments(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             Pageable pageable) {
-        Long userId = userIdParam.equals("me") ? userDetails.getUserId() : Long.parseLong(userIdParam);
+        return ResponseEntity.ok(commentService.getCommentsByUser(userDetails.getUserId(), pageable));
+    }
+
+    @GetMapping("/users/{userId}/comments")
+    public ResponseEntity<Page<CommentResponseDto>> getCommentsByUserId(
+            @PathVariable Long userId,
+            Pageable pageable) {
         return ResponseEntity.ok(commentService.getCommentsByUser(userId, pageable));
     }
 
-    // 댓글 수정 (내 댓글만 가능)
     @PatchMapping("/comments/{commentId}")
     public ResponseEntity<Void> update(
             @PathVariable Long commentId,
@@ -56,7 +62,7 @@ public class CommentController {
         return ResponseEntity.ok().build();
     }
 
-    // 댓글 삭제 (댓글 작성자 또는 게시글 작성자 가능)
+
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<Void> delete(
             @PathVariable Long commentId,
