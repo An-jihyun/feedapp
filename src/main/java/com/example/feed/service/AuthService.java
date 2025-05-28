@@ -3,7 +3,6 @@ package com.example.feed.service;
 import com.example.feed.dto.logIn.LoginRequestDto;
 import com.example.feed.entity.TokenBlacklist;
 import com.example.feed.entity.User;
-import com.example.feed.exception.CustomUnauthorizedException;
 import com.example.feed.security.jwt.JwtTokenProvider;
 import com.example.feed.repository.TokenBlacklistRepository;
 import com.example.feed.repository.UserRepository;
@@ -45,9 +44,6 @@ public class AuthService {
     // 로그아웃 로직 추가
     @Transactional
     public void logout(String token) {
-        if (token == null || !jwtTokenProvider.validateToken(token)) {
-            throw new CustomUnauthorizedException("토큰이 없거나 유효하지 않습니다.");
-        }
         LocalDateTime expiration = jwtTokenProvider.getExpiration(token);
         TokenBlacklist blacklist = new TokenBlacklist(token, expiration);
         blacklistRepository.save(blacklist);

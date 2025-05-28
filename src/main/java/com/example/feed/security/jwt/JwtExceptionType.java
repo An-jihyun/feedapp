@@ -11,7 +11,7 @@ public enum JwtExceptionType {
     EXPIRED_TOKEN("토큰이 만료되었습니다.", 401),
     UNSUPPORTED_TOKEN("지원하지 않는 JWT 토큰입니다.", 401),
     EMPTY_TOKEN("JWT claims 문자열이 비어 있습니다.", 400),
-    AUTHENTICATION_REQUIRED("인증이 필요합니다.", 401);
+    AUTHENTICATION_REQUIRED("로그인 상태가 아닙니다.", 401);
 
     private final String message;
     private final int status;
