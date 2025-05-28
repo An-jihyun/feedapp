@@ -28,6 +28,7 @@ public class PostController {
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 저장되었습니다.", postService.save(userDetails, cDto)), HttpStatus.CREATED);
     }
 
+    //update 메서드, 권한확인을 위한 userDetails 객체 포함
     @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse<PostResponseDto>> update(
             @PathVariable Long id,
@@ -44,5 +45,17 @@ public class PostController {
     ) {
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 저장되었습니다.", postService.findById(id)), HttpStatus.OK);
     }
+
+    //post 식별자를 사용한 게시물 삭제, 권한확인을 위한 userDetails 객체 포함
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> delete(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        postService.delete(id, userDetails);
+        return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 저장되었습니다.", null), HttpStatus.OK);
+    }
+
+
 
 }
