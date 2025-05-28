@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum JwtExceptionType {
 
+    LOGGED_OUT_TOKEN("로그아웃된 토큰입니다.", 401),
     INVALID_SIGNATURE("잘못된 JWT 서명입니다.", 401),
     MALFORMED_TOKEN("JWT 토큰 형식이 잘못되었습니다.", 400),
     EXPIRED_TOKEN("토큰이 만료되었습니다.", 401),
