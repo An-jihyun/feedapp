@@ -20,16 +20,21 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
+    // 이 키는 JWT 서명을 생성하고 검증할 때 사용
     @Value("${jwt.secret}")
     private String secretKey;
 
+    // JWT의 만료시간을 설정하는 값
     @Value("${jwt.expiration-in-ms}")
     private long validityInMilliseconds;
 
+    // JWT 서명을 위한 암호화 키 객체
     private Key key;
 
     private final CustomUserDetailsService customUserDetailsService;
 
+    // secretKey를 Key 객체로 변환, @PostConstruct는 객체 생성 후 자동으로 이 메서드를 실행하게 한다.
+    // HMAC-SHA256 방식에서 서명 키로 사용할 Key를 준비
     @PostConstruct
     public void init() {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
@@ -37,9 +42,15 @@ public class JwtTokenProvider {
 
     // JWT 토큰 생성
     public String createToken(String subject) {
+
+        // 현재 시각을 가져오고, 만료시간을 현재 시간 + 설정값만큼 계산
         Date now = new Date();
         Date expiry = new Date(now.getTime() + validityInMilliseconds);
 
+        // subject는 일반적으로 이메일 또는 사용자 ID로 JWT에 저장되는 주요 정보
+        // 발급 시간과 만료 시간도 설정
+        // HS256 알고리즘을 사용해 key로 서명
+        // 마지막에 .compact()로 문자열 형태의 토큰으로 변환
         return Jwts.builder()
                 .setSubject(subject)
                 .setIssuedAt(now)
