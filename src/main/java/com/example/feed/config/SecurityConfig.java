@@ -27,7 +27,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**" , "/users/follows").permitAll() //임의로 follows 추가함- 김도한
+                        .requestMatchers("/api/auth/**" , "/users/follows","/users/*/followings","/users/*/followers").permitAll() //임의로 follows 추가함- 김도한
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception

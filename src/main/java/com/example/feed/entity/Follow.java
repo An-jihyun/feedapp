@@ -32,6 +32,11 @@ public class Follow { //extends BaseEntity 예정
 
     //Jpa 가 사용 예정
     public Follow() {
+    }
 
+    //Getter추가
+
+    public User getFollowing() {
+        return following;
     }
 }

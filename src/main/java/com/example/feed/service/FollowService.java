@@ -1,6 +1,7 @@
 package com.example.feed.service;
 
 
+import com.example.feed.dto.follows.FollowingListResponseDto;
 import com.example.feed.dto.follows.FollowsResponseDto;
 import com.example.feed.entity.Follow;
 import com.example.feed.entity.User;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,6 +26,7 @@ public class FollowService {
     }
 
 
+    //팔로잉 추가
     public FollowsResponseDto follow(Long followerId, Long followingId) {
         //사용자
         Optional<User> followerUserId = userRepository.findById(followerId);
@@ -44,5 +47,12 @@ public class FollowService {
         Follow follow = new Follow(loginUserId, followedId);
         followsRepository.save(follow);
         return new FollowsResponseDto(followedId);
+    }
+
+    //팔로잉 목록 전체 조회
+    public List<FollowingListResponseDto> findListByUserId(Long userId) {
+
+        return followsRepository.findByFollowerId(userId).stream()
+                .map(follow -> FollowingListResponseDto.from(follow.getFollowing())).toList();
     }
 }
