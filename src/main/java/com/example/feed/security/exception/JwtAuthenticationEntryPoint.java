@@ -1,6 +1,6 @@
-package com.example.feed.config;
+package com.example.feed.security.exception;
 
-import com.example.feed.jwt.JwtExceptionType;
+import com.example.feed.security.jwt.JwtExceptionType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;

@@ -1,11 +1,13 @@
-package com.example.feed.jwt;
+package com.example.feed.security.jwt;
 
-import com.example.feed.security.CustomUserDetailsService;
+import com.example.feed.security.userDetail.CustomUserDetailsService;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +16,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Component
@@ -93,5 +97,30 @@ public class JwtTokenProvider {
         // 두 번째 파라미터는 credential(비밀번호) 자리에 빈 문자열("") 넣음 (이미 인증된 상태니까)
         // 세 번째 파라미터는 사용자의 권한 목록
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    public LocalDateTime getExpiration(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)  // 수정된 부분
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        Date expiration = claims.getExpiration();
+        return expiration.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    // HTTP 요청 헤더 'Authorization' 에서 Bearer 토큰 추출 메서드
+    public String resolveToken(HttpServletRequest request) {
+
+        // Authorization 헤더 값 읽기 (예: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...")
+        String bearerToken = request.getHeader("Authorization");
+
+        // 토큰이 있고 "Bearer "로 시작하면 토큰 값만 잘라서 리턴
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+
+        // 토큰 없거나 형식이 맞지 않으면 null 리턴
+        return null;
     }
 }

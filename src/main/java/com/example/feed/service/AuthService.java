@@ -1,9 +1,13 @@
 package com.example.feed.service;
 
 import com.example.feed.dto.logIn.LoginRequestDto;
+import com.example.feed.entity.TokenBlacklist;
 import com.example.feed.entity.User;
-import com.example.feed.jwt.JwtTokenProvider;
+import com.example.feed.exception.CustomUnauthorizedException;
+import com.example.feed.security.jwt.JwtTokenProvider;
+import com.example.feed.repository.TokenBlacklistRepository;
 import com.example.feed.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,14 +16,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
+    private final TokenBlacklistRepository blacklistRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
 
     public String login(String email, String password) {
         // 이메일/비밀번호로 인증 시도
@@ -33,6 +41,18 @@ public class AuthService {
         // 토큰 발급 (subject로 email 넣음)
         return jwtTokenProvider.createToken(email);
     }
+
+    // 로그아웃 로직 추가
+    @Transactional
+    public void logout(String token) {
+        if (token == null || !jwtTokenProvider.validateToken(token)) {
+            throw new CustomUnauthorizedException("토큰이 없거나 유효하지 않습니다.");
+        }
+        LocalDateTime expiration = jwtTokenProvider.getExpiration(token);
+        TokenBlacklist blacklist = new TokenBlacklist(token, expiration);
+        blacklistRepository.save(blacklist);
+    }
+
     //회원 가입 로직 추가
     public void signup(LoginRequestDto request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
