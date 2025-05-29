@@ -2,7 +2,7 @@ package com.example.feed.security.filter;
 
 import com.example.feed.security.jwt.JwtExceptionType;
 import com.example.feed.security.jwt.JwtTokenProvider;
-import com.example.feed.repository.TokenBlacklistRepository;
+import com.example.feed.auth.TokenBlacklistRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;

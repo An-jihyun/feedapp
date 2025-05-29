@@ -1,6 +1,6 @@
 package com.example.feed.security.userDetail;
 
-import com.example.feed.entity.User;
+import com.example.feed.user.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
