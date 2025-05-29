@@ -8,12 +8,13 @@ import java.util.Optional;
 
 public interface FollowsRepository extends JpaRepository<Follow,Long> {
 
-    //팔로잉 목록 조회
-    List<Follow> findByFollowerId(Long followerId);
+    //팔로잉 목록 전체 조회
+    List<Follow> findAllByFollowerId(Long followerId);
 
     //팔로워 목록 조회
     List<Follow> findByFollowingId(Long followingId);
 
 
     Optional<Follow> findByFollowerIdAndFollowingId(Long userId, Long followerId);
+
 }
