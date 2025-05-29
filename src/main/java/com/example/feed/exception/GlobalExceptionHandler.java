@@ -57,4 +57,29 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(errorMessage, request.getServletPath());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    // Auth 관련 새로운 예외 핸들러들
+    @ExceptionHandler(TokenRequiredException.class)
+    public ResponseEntity<ErrorResponse> handleTokenRequiredException(TokenRequiredException ex, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidTokenException(InvalidTokenException ex, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(TokenAlreadyBlacklistedException.class)
+    public ResponseEntity<ErrorResponse> handleTokenAlreadyBlacklistedException(TokenAlreadyBlacklistedException ex, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
 }
