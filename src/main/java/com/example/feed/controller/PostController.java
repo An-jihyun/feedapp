@@ -48,7 +48,7 @@ public class PostController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
         postService.delete(id, userDetails);
-        return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 삭제되었습니다.", null), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 삭제되었습니다.", null), HttpStatus.NO_CONTENT);
     }
 
     //게시물 전체 조회 페이지네이션, 검색조건(시작, 종료일) 포함
