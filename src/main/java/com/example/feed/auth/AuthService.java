@@ -1,6 +1,8 @@
 package com.example.feed.auth;
 
 import com.example.feed.auth.dto.LoginRequestDto;
+import com.example.feed.security.TokenBlacklist;
+import com.example.feed.security.TokenBlacklistRepository;
 import com.example.feed.user.User;
 import com.example.feed.exception.EmailAlreadyExistsException;
 import com.example.feed.exception.InvalidTokenException;

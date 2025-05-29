@@ -1,4 +1,4 @@
-package com.example.feed.auth;
+package com.example.feed.security;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

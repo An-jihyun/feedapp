@@ -2,7 +2,7 @@ package com.example.feed.security.filter;
 
 import com.example.feed.security.jwt.JwtExceptionType;
 import com.example.feed.security.jwt.JwtTokenProvider;
-import com.example.feed.auth.TokenBlacklistRepository;
+import com.example.feed.security.TokenBlacklistRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -12,8 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -42,30 +40,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 if (blacklistRepository.existsByToken(token)) {
                     log.warn("블랙리스트 토큰 접근 시도: {}", requestURI);
-                    throw new BadCredentialsException(JwtExceptionType.LOGGED_OUT_TOKEN.name());
+                    request.setAttribute("exception", JwtExceptionType.LOGGED_OUT_TOKEN.name());
+                } else {
+                    Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
-
-                Authentication authentication = jwtTokenProvider.getAuthentication(token);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
             } else if (token == null) {
                 log.debug("인증 토큰 없음: {}", requestURI);
             }
 
         } catch (SecurityException e) {
             log.error("JWT 시큐리티 예외: {}", e.getMessage());
-            throw new BadCredentialsException(JwtExceptionType.INVALID_SIGNATURE.name());
+            request.setAttribute("exception", JwtExceptionType.INVALID_SIGNATURE.name());
         } catch (MalformedJwtException e) {
             log.error("JWT 형식 오류: {}", e.getMessage());
-            throw new BadCredentialsException(JwtExceptionType.MALFORMED_TOKEN.name());
+            request.setAttribute("exception", JwtExceptionType.MALFORMED_TOKEN.name());
         } catch (ExpiredJwtException e) {
             log.info("만료된 토큰 사용 시도: {}", requestURI);
-            throw new CredentialsExpiredException(JwtExceptionType.EXPIRED_TOKEN.name());
+            request.setAttribute("exception", JwtExceptionType.EXPIRED_TOKEN.name());
         } catch (UnsupportedJwtException e) {
             log.error("지원하지 않는 JWT 형식: {}", e.getMessage());
-            throw new BadCredentialsException(JwtExceptionType.UNSUPPORTED_TOKEN.name());
+            request.setAttribute("exception", JwtExceptionType.UNSUPPORTED_TOKEN.name());
         } catch (IllegalArgumentException e) {
             log.error("빈 JWT 토큰: {}", e.getMessage());
-            throw new BadCredentialsException(JwtExceptionType.EMPTY_TOKEN.name());
+            request.setAttribute("exception", JwtExceptionType.EMPTY_TOKEN.name());
         }
 
         filterChain.doFilter(request, response);

@@ -1,4 +1,4 @@
-package com.example.feed.auth;
+package com.example.feed.security;
 
 import jakarta.persistence.*;
 import lombok.Getter;
