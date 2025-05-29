@@ -3,6 +3,7 @@ package com.example.feed.post;
 import com.example.feed.post.dto.request.CreatePostRequestDto;
 import com.example.feed.post.dto.request.UpdatePostRequestDto;
 import com.example.feed.post.dto.response.PostResponseDto;
+import com.example.feed.security.userDetail.CustomUserDetails;
 import com.example.feed.user.User;
 import com.example.feed.exception.PostNotFoundException;
 import com.example.feed.exception.UserMismatchException;
@@ -25,7 +26,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    public PostResponseDto save(UserDetails userDetails, CreatePostRequestDto cDto) {
+    public PostResponseDto save(CustomUserDetails userDetails, CreatePostRequestDto cDto) {
         /*
         로그인이 돼 있는 상태라 예외가 나올일이 없지만 user 로 받기 위해선 예외처리가 필요하긴함
         -> 예외처리는 가급적 서비스레이어에서 진행
@@ -36,7 +37,7 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponseDto update(Long id, UserDetails userDetails, UpdatePostRequestDto uDto) {
+    public PostResponseDto update(Long id, CustomUserDetails userDetails, UpdatePostRequestDto uDto) {
         Post foundPost = validateUserAccessToPost(id, userDetails);
 
         //수정 메서드( == setter) -> 더티체킹으로 save() 까지 진행
@@ -49,7 +50,7 @@ public class PostService {
         return PostResponseDto.from(postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("게시물 id를 확인해주세요.")));
     }
 
-    public void delete(Long id, UserDetails userDetails) {
+    public void delete(Long id, CustomUserDetails userDetails) {
         Post foundPost = validateUserAccessToPost(id, userDetails);
 
         postRepository.delete(foundPost);
@@ -59,7 +60,7 @@ public class PostService {
     서비스 단에서 사용할 권한 확인 용 메서드 : 반복되는 로직 메서드로 처리
     -> 리팩토링 가능성 : 인가 유틸로 구조 변경뒤 해당 유틸의 메서드로도 활용 가능 (타입변수로 받으면 다른 도메인에서도 사용가능할수도?)
     * */
-    private Post validateUserAccessToPost(Long id, UserDetails userDetails) {
+    private Post validateUserAccessToPost(Long id, CustomUserDetails userDetails) {
         //로그인 한 User 엔티티
         User foundUser = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(() -> new UserNotFoundException("정보와 일치하는 유저가 없습니다."));
         //id 값으로 게시물 조회
