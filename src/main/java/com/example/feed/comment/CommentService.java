@@ -37,6 +37,7 @@ public class CommentService {
     public Page<CommentResponseDto> getCommentsByPost(Long postId, Pageable pageable) {
         Page<Comment> comments = commentRepository.findByPostId(postId, pageable);
         return comments.map(CommentResponseDto::from);
+        //comment -> CommentResponseDto.from(comment)
     }
 
     public Page<CommentResponseDto> getCommentsByUser(Long userId,Pageable pageable) {
@@ -63,14 +64,6 @@ public class CommentService {
 
 
 
-
-    public void deleteCommentsByPostId(Long postId) {
-        commentRepository.deleteAllByPostId(postId);
-    }
-
-    public void deleteCommentsByUserId(Long userId) {
-        commentRepository.deleteAllByUserId(userId);
-    }
 
     private User findUserById(Long userId) {
         return userRepository.findById(userId)
