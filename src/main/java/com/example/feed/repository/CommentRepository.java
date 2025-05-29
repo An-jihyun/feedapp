@@ -15,5 +15,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     Page<Comment> findByUserId(Long userId, Pageable pageable);
 
-    void deleteByPostId(Long postId);
+    void deleteAllByPostId(Long postId);       // 게시글 기준 전체 댓글 삭제
+    void deleteAllByUserId(Long userId);       // 유저 기준 전체 댓글 삭제
 }
