@@ -16,15 +16,14 @@ public class CommentResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    private CommentResponseDto(Comment comment) {
-        this.id = comment.getId();
-        this.content = comment.getContent();
-        this.userName = comment.getUser().getUserName();
-        this.createdAt = comment.getCreatedAt();
-        this.modifiedAt = comment.getModifiedAt();
-    }
+
 
     public static CommentResponseDto from(Comment comment) {
-        return new CommentResponseDto(comment);
+        return new CommentResponseDto(comment.getId(),
+                comment.getContent(),
+                comment.getUser().getUserName(),
+                comment.getCreatedAt(),
+                comment.getModifiedAt());
     }
+
 }
