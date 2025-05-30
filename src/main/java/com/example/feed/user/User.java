@@ -31,4 +31,18 @@ public class User {
     public void delete() {
         this.isDeleted = true;
     }
+
+    public void updateProfile(String userName, String email) {
+        this.userName = userName;
+        this.email = email;
+    }
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
+
+    private boolean isValidPasswordFormat(String password) {
+        // 8자 이상, 영문, 숫자, 특수문자 포함
+        return password.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&]).{8,}$");
+    }
 }
