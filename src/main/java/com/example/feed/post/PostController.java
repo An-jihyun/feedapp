@@ -58,7 +58,7 @@ public class PostController {
             @DateTimeFormat(pattern = "yyyyMMdd") LocalDate periodStart, @DateTimeFormat(pattern = "yyyyMMdd") LocalDate periodEnd
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
-        return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 조회되었습니다.", postService.findPagedPostsByPeriod(pageable, periodStart, periodEnd)), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 조회되었습니다.", postService.findPagedPostsPeriodOrAll(pageable, periodStart, periodEnd)), HttpStatus.OK);
     }
 
 }

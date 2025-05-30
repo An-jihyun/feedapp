@@ -58,10 +58,10 @@ public class PostService {
         foundPost.softDelete();
     }
 
-    public Page<PostResponseDto> findPagedPostsByPeriod(Pageable pageable, LocalDate periodStart, LocalDate periodEnd) {
-        //예외?처리 날짜를 설정하지 않았을 시 전체 페이징 데이터 조회
+    public Page<PostResponseDto> findPagedPostsPeriodOrAll(Pageable pageable, LocalDate periodStart, LocalDate periodEnd) {
+        //날짜 관련 데이터를 동봉하지 않았을 시 발생되는 로직
         if(periodStart == null || periodEnd == null) {
-            return postRepository.findAll(pageable).map(PostResponseDto::from);
+            return postRepository.findAllByDeletedFalse(pageable).map(PostResponseDto::from);
         }
 
         //LocalDate -> Time 을 붙여 LocalDateTime 형식으로 바꿔주기
