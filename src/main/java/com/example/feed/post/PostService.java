@@ -69,6 +69,7 @@ public class PostService {
     }
 
     //사용자 논리적 삭제시 해당 메서드도 같이 사용해주면 작성자의 모든 Post 를 논리적삭제시킴
+    @Transactional
     public void softDeletePostsByUserId(Long userId) {
         postRepository.findAllByUserIdAndDeletedFalse(userId).forEach(Post::softDelete);
     }
