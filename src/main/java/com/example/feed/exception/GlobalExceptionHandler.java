@@ -94,4 +94,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUsernameNotFound(HttpServletRequest request) {ErrorResponse errorResponse = new ErrorResponse("이메일 또는 비밀번호가 일치하지 않습니다.", request.getRequestURI());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
+
+    // 좋아요 관련 예외 핸들러 추가
+    @ExceptionHandler(SelfLikeNotAllowedException.class)
+    public ResponseEntity<ErrorResponse> handleSelfLikeNotAllowedException(SelfLikeNotAllowedException ex, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 }
