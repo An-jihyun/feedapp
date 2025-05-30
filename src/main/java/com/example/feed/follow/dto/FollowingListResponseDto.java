@@ -1,4 +1,4 @@
-package com.example.feed.dto.follows;
+package com.example.feed.follow.dto;
 
 import com.example.feed.entity.User;
 

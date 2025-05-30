@@ -2,14 +2,13 @@ package com.example.feed.controller;
 
 
 import com.example.feed.dto.common.ApiResponse;
-import com.example.feed.dto.follows.FollowingListResponseDto;
-import com.example.feed.dto.follows.FollowsRequestDto;
-import com.example.feed.dto.follows.FollowsResponseDto;
-import com.example.feed.dto.follows.UnfollowUserNameRequestDto;
+import com.example.feed.follow.dto.FollowingListResponseDto;
+import com.example.feed.follow.dto.FollowsRequestDto;
+import com.example.feed.follow.dto.FollowsResponseDto;
+import com.example.feed.follow.dto.UnfollowUserNameRequestDto;
 import com.example.feed.security.userDetail.CustomUserDetails;
 import com.example.feed.service.AuthService;
 import com.example.feed.service.FollowService;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

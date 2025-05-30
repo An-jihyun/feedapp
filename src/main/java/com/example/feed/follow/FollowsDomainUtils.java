@@ -1,13 +1,9 @@
-package com.example.feed;
+package com.example.feed.follow;
 
 
-import com.example.feed.entity.Follow;
 import com.example.feed.entity.User;
 import com.example.feed.exception.follows.*;
-import com.example.feed.repository.FollowsRepository;
 import com.example.feed.repository.UserRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

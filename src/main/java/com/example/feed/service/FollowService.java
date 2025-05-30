@@ -1,13 +1,13 @@
 package com.example.feed.service;
 
 
-import com.example.feed.FollowsDomainUtils;
-import com.example.feed.dto.follows.FollowingListResponseDto;
-import com.example.feed.dto.follows.FollowsRequestDto;
-import com.example.feed.dto.follows.FollowsResponseDto;
-import com.example.feed.entity.Follow;
+import com.example.feed.follow.FollowsDomainUtils;
+import com.example.feed.follow.dto.FollowingListResponseDto;
+import com.example.feed.follow.dto.FollowsRequestDto;
+import com.example.feed.follow.dto.FollowsResponseDto;
+import com.example.feed.follow.Follow;
 import com.example.feed.entity.User;
-import com.example.feed.repository.FollowsRepository;
+import com.example.feed.follow.FollowsRepository;
 import com.example.feed.repository.UserRepository;
 import com.example.feed.security.userDetail.CustomUserDetails;
 import org.springframework.transaction.annotation.Transactional;

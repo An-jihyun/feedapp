@@ -1,7 +1,9 @@
-package com.example.feed.entity;
+package com.example.feed.follow;
 
 
 
+import com.example.feed.entity.BaseEntity;
+import com.example.feed.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
