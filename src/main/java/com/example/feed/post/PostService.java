@@ -67,4 +67,9 @@ public class PostService {
         //LocalDate -> Time 을 붙여 LocalDateTime 형식으로 바꿔주기
         return postRepository.findByCreatedAtBetweenAndDeletedFalse(periodStart.atStartOfDay(), periodEnd.atTime(LocalTime.MAX), pageable).map(PostResponseDto::from);
     }
+
+    //사용자 논리적 삭제시 해당 메서드도 같이 사용해주면 작성자의 모든 Post 를 논리적삭제시킴
+    public void softDeletePostsByUserId(Long userId) {
+        postRepository.findAllByUserIdAndDeletedFalse(userId).forEach(Post::softDelete);
+    }
 }
