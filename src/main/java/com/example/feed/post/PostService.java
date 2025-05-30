@@ -49,11 +49,13 @@ public class PostService {
     }
 
     public PostResponseDto findById(Long id) {
-        return PostResponseDto.from(postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("게시물 id를 확인해주세요.")));
+        return PostResponseDto.from(postRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new PostNotFoundException("게시물 id를 확인해주세요.")));
     }
 
+    @Transactional
     public void delete(Long id, CustomUserDetails userDetails) {
-        postRepository.delete(postDomainUtils.validateUserAccessToPost(id, userDetails));
+        Post foundPost = postDomainUtils.validateUserAccessToPost(id, userDetails);
+        foundPost.delete();
     }
 
     public Page<PostResponseDto> findPagedPostsByPeriod(Pageable pageable, LocalDate periodStart, LocalDate periodEnd) {
