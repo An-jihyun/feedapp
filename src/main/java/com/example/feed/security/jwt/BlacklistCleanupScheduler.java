@@ -1,6 +1,6 @@
 package com.example.feed.security.jwt;
 
-import com.example.feed.repository.TokenBlacklistRepository;
+import com.example.feed.security.TokenBlacklistRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

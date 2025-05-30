@@ -1,7 +1,7 @@
 package com.example.feed.security.userDetail;
 
-import com.example.feed.entity.User;
-import com.example.feed.repository.UserRepository;
+import com.example.feed.user.User;
+import com.example.feed.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

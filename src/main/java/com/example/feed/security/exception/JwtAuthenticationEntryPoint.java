@@ -17,7 +17,12 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
 
-        String errorCode = authException.getMessage();
+        // Filter 에서 설정한 예외 정보 먼저 확인
+        String errorCode = (String) request.getAttribute("exception");
+        if (errorCode == null) {
+            errorCode = authException.getMessage();
+        }
+
         JwtExceptionType exceptionType;
 
         try {

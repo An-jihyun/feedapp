@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Base64;
 import java.util.Date;
 
 @Component
@@ -41,7 +42,8 @@ public class JwtTokenProvider {
     // HMAC-SHA256 방식에서 서명 키로 사용할 Key를 준비
     @PostConstruct
     public void init() {
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        // Base64 디코딩 추가
+        this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
     }
 
     // JWT 토큰 생성
