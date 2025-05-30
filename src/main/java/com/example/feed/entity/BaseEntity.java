@@ -22,4 +22,13 @@ public abstract class BaseEntity {
     @LastModifiedDate
     private LocalDateTime modifiedAt;
 
+    private LocalDateTime deletedAt;// 추가
+
+    @Column(nullable = false)
+    private Boolean deleted = false;// 추가
+
+    public void softDelete() {
+        this.deleted = true;
+    }
+
 }

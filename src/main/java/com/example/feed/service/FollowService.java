@@ -1,6 +1,7 @@
 package com.example.feed.service;
 
 
+import com.example.feed.FollowsDomainUtils;
 import com.example.feed.dto.follows.FollowingListResponseDto;
 import com.example.feed.dto.follows.FollowsRequestDto;
 import com.example.feed.dto.follows.FollowsResponseDto;
@@ -9,22 +10,24 @@ import com.example.feed.entity.User;
 import com.example.feed.repository.FollowsRepository;
 import com.example.feed.repository.UserRepository;
 import com.example.feed.security.userDetail.CustomUserDetails;
-import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class FollowService {
 
     private final FollowsRepository followsRepository;
     private final UserRepository userRepository;
+    private final FollowsDomainUtils followsDomainUtils;
 
-    public FollowService(FollowsRepository followsRepository, UserRepository userRepository) {
+    public FollowService(FollowsRepository followsRepository, UserRepository userRepository, FollowsDomainUtils followsDomainUtils) {
         this.followsRepository = followsRepository;
         this.userRepository = userRepository;
+        this.followsDomainUtils = followsDomainUtils;
     }
 
 
@@ -34,16 +37,13 @@ public class FollowService {
         Long followerId = userDetails.getUserId();
         //팔로잉 대상 Id
         Long followingId = requestDto.getuserId();
-        //자기 자신 팔로우 금지
-        if (followerId.equals(followingId)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"자신은 팔로우 할 수 없습니다.");
-        }
-        //사용자조회
-        User follower = userRepository.findById(followerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "로그인 후 이용해주세요"));
-
-        User following = userRepository.findById(followingId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "팔로우 대상이 없습니다."));
+        //자기 자신 팔로우 금지 도메인 유틸 메서드로 활용
+        followsDomainUtils.validateNotSelfFollow(followerId,followingId);
+        //팔로우 중복 금지 예외처리
+        followsDomainUtils.validateAlreadyFollowing(followerId,followingId);
+        //유저 조회 도메인 유틸메서드로 활용
+        User follower =  followsDomainUtils.validNotLoginUser(followerId);
+        User following = followsDomainUtils.validFollowUserNotFound(followingId);
 
         //follow 객체 생성
         Follow follow = new Follow(follower, following);
@@ -52,50 +52,48 @@ public class FollowService {
     }
 
     //팔로잉 목록 전체 조회
+    @Transactional(readOnly=true)
     public List<FollowingListResponseDto> getFollowings(CustomUserDetails userDetails) {
         Long userId = userDetails.getUserId();
-        return followsRepository.findAllByFollowerId(userId).stream()
+
+        return followsRepository.findAllByFollowerIdAndDeletedFalse(userId).stream()
                 .map(follow -> FollowingListResponseDto.from(follow.getFollowing())).toList();
     }
 
     //팔로잉 단건 조회
+    @Transactional(readOnly=true)
     public FollowsResponseDto getFollowing(CustomUserDetails userDetails,Long followingId) {
         Long userId = userDetails.getUserId();
-        Follow follow = followsRepository.findByFollowerIdAndFollowingId(userId, followingId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "팔로우중이아닙니다."));
+        //팔로잉 여부 유틸 메서드로 활용
+        Follow follow = followsDomainUtils.validNotFollowingUser(userId,followingId);
         return new FollowsResponseDto(follow.getFollowing());
 
     }
 
     //팔로워 목록 전체 조회
+    @Transactional(readOnly=true)
     public List<FollowingListResponseDto> getFollowers(CustomUserDetails userDetails) {
         Long userId = userDetails.getUserId();
-        return followsRepository.findByFollowingId(userId).stream()
+        return followsRepository.findByFollowingIdAndDeletedFalse(userId).stream()
                 .map(follow -> FollowingListResponseDto.from(follow.getFollower())).toList();
     }
 
     //팔로워 단건 조회
+    @Transactional(readOnly=true)
     public FollowsResponseDto getFollower(CustomUserDetails userDetails, Long followerId) {
         Long userId = userDetails.getUserId();
-
-        Follow follow = followsRepository.findByFollowerIdAndFollowingId(userId, followerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "팔로워가 아닙니다."));
+        //팔로워 여부 유틸 메서드로 활용
+        Follow follow =followsDomainUtils.validNotFollowerUser(userId,followerId);
         return new FollowsResponseDto(follow.getFollower());
     }
 
     //팔로우 삭제
-    public void unFollow(CustomUserDetails userDetails,String username) {
+    @Transactional
+    public void softDeleteUnFollow(CustomUserDetails userDetails,String username) {
         Long userId = userDetails.getUserId();
-        //unfollow 유저 찾기
-        User followingUser = userRepository.findByUserName(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."));
-        //follow 관계 찾기
-        Follow follow = followsRepository.findByFollowerIdAndFollowingId(userId, followingUser.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "팔로우 중이 아닙니다. "));
-        //삭제
-        followsRepository.delete(follow);
-
+        //팔로우 관계 여부 유틸 메서드로 활용
+        Follow follow = followsDomainUtils.validFollowerExistUserAndNotFollowerUser(userId, username);
+        follow.softDelete();
     }
-
 
 }

@@ -3,6 +3,7 @@ package com.example.feed.entity;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 
@@ -17,16 +18,27 @@ public class Follow extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "follower_id",nullable = false)
+    @NotNull
+    //팔로우를 건 사람(로그인한 사용자)
     private User follower;
 
 
     @ManyToOne
     @JoinColumn(name = "following_id",nullable = false)
+    @NotNull
+    //팔로우를 당한 사람(상대방,팔로우 대상)
     private User following;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
 
     public Follow(User follower, User following){
         this.follower = follower;
         this.following = following;
+    }
+
+    public void softDelete(){
+        this.deleted =true;
     }
 
     //Jpa 가 사용 예정
