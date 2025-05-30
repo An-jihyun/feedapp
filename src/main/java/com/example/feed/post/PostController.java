@@ -47,7 +47,7 @@ public class PostController {
     //post 식별자를 사용한 게시물 삭제, 권한확인을 위한 userDetails 객체 포함
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        postService.delete(id, userDetails);
+        postService.softDelete(id, userDetails);
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 삭제되었습니다.", null), HttpStatus.OK);
     }
 

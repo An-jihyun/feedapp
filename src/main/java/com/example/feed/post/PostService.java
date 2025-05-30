@@ -43,7 +43,7 @@ public class PostService {
         Post foundPost = postDomainUtils.validateUserAccessToPost(id, userDetails);
 
         //수정 메서드( == setter) -> 더티체킹으로 save() 까지 진행
-        foundPost.patchCheck(uDto);
+        foundPost.patchIfNotNull(uDto.getTitle(), uDto.getContent());
 
         return PostResponseDto.from(foundPost);
     }
@@ -53,9 +53,9 @@ public class PostService {
     }
 
     @Transactional
-    public void delete(Long id, CustomUserDetails userDetails) {
+    public void softDelete(Long id, CustomUserDetails userDetails) {
         Post foundPost = postDomainUtils.validateUserAccessToPost(id, userDetails);
-        foundPost.delete();
+        foundPost.softDelete();
     }
 
     public Page<PostResponseDto> findPagedPostsByPeriod(Pageable pageable, LocalDate periodStart, LocalDate periodEnd) {
@@ -65,6 +65,6 @@ public class PostService {
         }
 
         //LocalDate -> Time 을 붙여 LocalDateTime 형식으로 바꿔주기
-        return postRepository.findByCreatedAtBetween(periodStart.atStartOfDay(), periodEnd.atTime(LocalTime.MAX), pageable).map(PostResponseDto::from);
+        return postRepository.findByCreatedAtBetweenAndDeletedFalse(periodStart.atStartOfDay(), periodEnd.atTime(LocalTime.MAX), pageable).map(PostResponseDto::from);
     }
 }
