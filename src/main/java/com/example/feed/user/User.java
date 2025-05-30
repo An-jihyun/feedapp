@@ -25,4 +25,10 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private boolean isDeleted = false;
+
+    public void delete() {
+        this.isDeleted = true;
+    }
 }
