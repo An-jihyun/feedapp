@@ -83,6 +83,7 @@ public class CommentController {
             @PathVariable Long commentId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         commentService.deleteComment(commentId, userDetails.getUserId());
-        return new ResponseEntity<>(new ApiResponse<>("정상적으로 댓글이 삭제되었습니다.", null), HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(new ApiResponse<>("정상적으로 댓글이 삭제되었습니다.", null), HttpStatus.OK);
     }
 }
+
