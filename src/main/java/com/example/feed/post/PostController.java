@@ -4,6 +4,7 @@ import com.example.feed.common.dto.ApiResponse;
 import com.example.feed.post.dto.request.CreatePostRequestDto;
 import com.example.feed.post.dto.request.UpdatePostRequestDto;
 import com.example.feed.post.dto.response.PostResponseDto;
+import com.example.feed.security.userDetail.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,13 +28,13 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<PostResponseDto>> save(@Valid @RequestBody CreatePostRequestDto cDto, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<ApiResponse<PostResponseDto>> save(@Valid @RequestBody CreatePostRequestDto cDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 저장되었습니다.", postService.save(userDetails, cDto)), HttpStatus.CREATED);
     }
 
     //update 메서드, 권한확인을 위한 userDetails 객체 포함
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<PostResponseDto>> update(@PathVariable Long id, @Valid @RequestBody UpdatePostRequestDto uDto, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<ApiResponse<PostResponseDto>> update(@PathVariable Long id, @Valid @RequestBody UpdatePostRequestDto uDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 저장되었습니다.", postService.update(id, userDetails, uDto)), HttpStatus.OK);
     }
 
@@ -45,7 +46,7 @@ public class PostController {
 
     //post 식별자를 사용한 게시물 삭제, 권한확인을 위한 userDetails 객체 포함
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
         postService.delete(id, userDetails);
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 삭제되었습니다.", null), HttpStatus.NO_CONTENT);
     }
