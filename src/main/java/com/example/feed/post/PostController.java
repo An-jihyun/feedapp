@@ -47,8 +47,8 @@ public class PostController {
     //post 식별자를 사용한 게시물 삭제, 권한확인을 위한 userDetails 객체 포함
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        postService.delete(id, userDetails);
-        return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 삭제되었습니다.", null), HttpStatus.NO_CONTENT);
+        postService.softDelete(id, userDetails);
+        return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 삭제되었습니다.", null), HttpStatus.OK);
     }
 
     //게시물 전체 조회 페이지네이션, 검색조건(시작, 종료일) 포함
@@ -58,7 +58,7 @@ public class PostController {
             @DateTimeFormat(pattern = "yyyyMMdd") LocalDate periodStart, @DateTimeFormat(pattern = "yyyyMMdd") LocalDate periodEnd
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
-        return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 조회되었습니다.", postService.findPagedPostsByPeriod(pageable, periodStart, periodEnd)), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 조회되었습니다.", postService.findPagedPostsPeriodOrAll(pageable, periodStart, periodEnd)), HttpStatus.OK);
     }
 
 }
