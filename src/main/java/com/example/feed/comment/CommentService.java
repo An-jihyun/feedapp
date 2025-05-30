@@ -17,74 +17,55 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final CommentDomainUtils commentDomainUtils;
+
 
     public CommentResponseDto createComment(Long postId, CreateCommentRequestDto requestDto, Long userId) {
-        User user = findUserById(userId);
-        Post post = findPostById(postId);
-
+        User user = commentDomainUtils.getCurrentUser(userId);
+        Post post = commentDomainUtils.getPost(postId);
         Comment comment = Comment.create(requestDto.getContent(), user, post);
         return CommentResponseDto.from(commentRepository.save(comment));
     }
 
+    @Transactional(readOnly=true)
     public Page<CommentResponseDto> getCommentsByPost(Long postId, Pageable pageable) {
-        Page<Comment> comments = commentRepository.findByPostId(postId, pageable);
-        return comments.map(CommentResponseDto::from);
+        return commentRepository.findByPostIdAndDeletedFalse(postId, pageable)
+                .map(CommentResponseDto::from);
     }
 
+    @Transactional(readOnly=true)
     public Page<CommentResponseDto> getCommentsByUser(Long userId,Pageable pageable) {
-        Page<Comment> comments = commentRepository.findByUserId(userId,pageable);
-        return comments.map(CommentResponseDto::from);
+        return commentRepository.findByUserIdAndDeletedFalse(userId, pageable)
+                .map(CommentResponseDto::from);
     }
+
 
     public void updateComment(Long commentId, UpdateCommentRequestDto requestDto, Long userId) {
-        Comment comment = findCommentById(commentId);
-        if (!comment.getUser().getId().equals(userId)) {
-            throw new UserMismatchException("본인이 작성한 댓글만 수정할 수 있습니다.");
-        }
-        comment.updateContent(requestDto.getContent());
+        commentDomainUtils.validateAndGetComment(commentId, userId).updateContent(requestDto.getContent());
     }
+
 
     public void deleteComment(Long commentId, Long userId) {
-        Comment comment = findCommentById(commentId);
-        if (!comment.getUser().getId().equals(userId)
-                && !comment.getPost().getUser().getId().equals(userId)) {
-            throw new UserMismatchException("삭제 권한이 없습니다.");
-        }
-        commentRepository.delete(comment);
+        commentDomainUtils.validateAndGetComment(commentId, userId).softDelete();
+    }
+
+    //상위 도메인 호출 용(soft delete)
+    public void softDeleteCommentsByPostId(Long postId) {
+        commentRepository.findByPostIdAndDeletedFalse(postId).forEach(Comment::softDelete);
+    }
+    public void softDeleteCommentsByUserId(Long userId) {
+        commentRepository.findByUserIdAndDeletedFalse(userId).forEach(Comment::softDelete);
     }
 
 
 
-
-    public void deleteCommentsByPostId(Long postId) {
-        commentRepository.deleteAllByPostId(postId);
-    }
-
-    public void deleteCommentsByUserId(Long userId) {
-        commentRepository.deleteAllByUserId(userId);
-    }
-
-    private User findUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
-    }
-
-    private Post findPostById(Long postId) {
-        return postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
-    }
-
-    private Comment findCommentById(Long commentId) {
-        return commentRepository.findById(commentId)
-                .orElseThrow(() -> new CommentNotFoundException("댓글이 존재하지 않습니다."));
-    }
 }
 

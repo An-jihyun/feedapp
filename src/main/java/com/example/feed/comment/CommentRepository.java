@@ -5,13 +5,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    Page<Comment> findByPostId(Long postId, Pageable pageable);
+    //페이징
+    Page<Comment> findByPostIdAndDeletedFalse(Long postId, Pageable pageable);
+    Page<Comment> findByUserIdAndDeletedFalse(Long userId, Pageable pageable);
 
-    Page<Comment> findByUserId(Long userId, Pageable pageable);
+    //soft-delete용
+    List<Comment> findByPostIdAndDeletedFalse(Long postId);
+    List<Comment> findByUserIdAndDeletedFalse(Long userId);
 
-    void deleteAllByPostId(Long postId);       // 게시글 기준 전체 댓글 삭제
-    void deleteAllByUserId(Long userId);       // 유저 기준 전체 댓글 삭제
+    //단건 조회
+    Optional<Comment> findByIdAndDeletedFalse(Long id);
 }
