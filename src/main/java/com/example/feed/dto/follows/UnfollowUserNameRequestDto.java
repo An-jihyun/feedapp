@@ -1,10 +1,10 @@
 package com.example.feed.dto.follows;
 
-public class UnfollowUserNameReqeustDto {
+public class UnfollowUserNameRequestDto {
 
     private String username;
 
-    public UnfollowUserNameReqeustDto(String username) {
+    public UnfollowUserNameRequestDto(String username) {
         this.username = username;
     }
 

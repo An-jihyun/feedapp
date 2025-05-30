@@ -5,7 +5,7 @@ import com.example.feed.dto.common.ApiResponse;
 import com.example.feed.dto.follows.FollowingListResponseDto;
 import com.example.feed.dto.follows.FollowsRequestDto;
 import com.example.feed.dto.follows.FollowsResponseDto;
-import com.example.feed.dto.follows.UnfollowUserNameReqeustDto;
+import com.example.feed.dto.follows.UnfollowUserNameRequestDto;
 import com.example.feed.security.userDetail.CustomUserDetails;
 import com.example.feed.service.AuthService;
 import com.example.feed.service.FollowService;
@@ -67,7 +67,7 @@ public class FollowController {
 
     //팔로워 단건 조회
     @GetMapping("/me/followers/{followerId}")
-    public ResponseEntity<ApiResponse<FollowsResponseDto>> follwerByIdAPI(
+    public ResponseEntity<ApiResponse<FollowsResponseDto>> followerByIdAPI(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long followerId
     ) {
@@ -79,7 +79,7 @@ public class FollowController {
     @DeleteMapping("/follows")
     public ResponseEntity<ApiResponse<Void>> followDeleteAPI(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody UnfollowUserNameReqeustDto reqeustDto) {
+            @RequestBody UnfollowUserNameRequestDto reqeustDto) {
 
             followService.unFollow(userDetails,reqeustDto.getUsername());
 
