@@ -1,11 +1,9 @@
 package com.example.feed.exception;
 
-import com.example.feed.common.dto.ErrorResponse;
+import com.example.feed.dto.common.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -100,5 +98,37 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleSelfLikeNotAllowedException(SelfLikeNotAllowedException ex, HttpServletRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FollowNotMySelfException.class)
+    public ResponseEntity<ErrorResponse> handleFollowNotMySelfException(FollowNotMySelfException ex, HttpServletRequest request){
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FollowNotLoginException.class)
+    public ResponseEntity<ErrorResponse> handleNotLoginNotFollow(FollowNotLoginException ex,HttpServletRequest request){
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+        return new ResponseEntity<>(errorResponse,HttpStatus.UNAUTHORIZED);
+    }
+    @ExceptionHandler(FollowerUserExistException.class)
+    public ResponseEntity<ErrorResponse> handleFollowerUserExistException(FollowerUserExistException ex, HttpServletRequest request){
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(),request.getServletPath());
+        return new ResponseEntity<>(errorResponse,HttpStatus.UNAUTHORIZED);
+    }
+    @ExceptionHandler(FollowNotFollowerException.class)
+    public ResponseEntity<ErrorResponse> handleFollowerNotFollowerException(FollowNotFollowerException ex,HttpServletRequest request){
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+        return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(FollowsUserDeleteException.class)
+    public ResponseEntity<ErrorResponse> handleFollowsExitsUserException(FollowsUserDeleteException ex,HttpServletRequest request){
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+        return new ResponseEntity<>(errorResponse,HttpStatus.UNAUTHORIZED);
+    }
+    @ExceptionHandler(FollowsAlreadyFollowingException.class)
+    public ResponseEntity<ErrorResponse> handleFollowerAlreadyFollowingException(FollowsAlreadyFollowingException ex,HttpServletRequest request){
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+        return new ResponseEntity<>(errorResponse,HttpStatus.UNAUTHORIZED);
     }
 }
