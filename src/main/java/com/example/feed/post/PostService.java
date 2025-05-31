@@ -13,7 +13,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -25,11 +24,14 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final PostDomainUtils postDomainUtils;
 
     public PostResponseDto save(CustomUserDetails userDetails, CreatePostRequestDto cDto) {
         /*
-        로그인이 돼 있는 상태라 예외가 나올일이 없지만 user 로 받기 위해선 예외처리가 필요하긴함
-        -> 예외처리는 가급적 서비스레이어에서 진행
+        1. 반환타입이 Optional<User> -> user 로 받기 위해선 null 에 대한 명시적 예외처리가 필요함
+            -> 예외처리는 가급적 서비스레이어에서 진행하길 희망함
+        2. save 메서드는 요구사항에서 원하는 인가단계가 필요하지 않음 validateUserAccessToPost 메서드를 사용하지 않을 것
+            -> 요구사항: 수정, 삭제시 내가 작성한 게시물만 가능
          */
         User foundUser = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(() -> new UserNotFoundException("정보와 일치하는 유저가 없습니다."));
 
@@ -38,49 +40,37 @@ public class PostService {
 
     @Transactional
     public PostResponseDto update(Long id, CustomUserDetails userDetails, UpdatePostRequestDto uDto) {
-        Post foundPost = validateUserAccessToPost(id, userDetails);
+        Post foundPost = postDomainUtils.validateUserAccessToPost(id, userDetails);
 
         //수정 메서드( == setter) -> 더티체킹으로 save() 까지 진행
-        foundPost.patchCheck(uDto);
+        foundPost.patchIfNotNull(uDto.getTitle(), uDto.getContent());
 
         return PostResponseDto.from(foundPost);
     }
 
     public PostResponseDto findById(Long id) {
-        return PostResponseDto.from(postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("게시물 id를 확인해주세요.")));
+        return PostResponseDto.from(postRepository.findByIdAndDeletedFalse(id).orElseThrow(() -> new PostNotFoundException("게시물 id를 확인해주세요.")));
     }
 
-    public void delete(Long id, CustomUserDetails userDetails) {
-        Post foundPost = validateUserAccessToPost(id, userDetails);
-
-        postRepository.delete(foundPost);
+    @Transactional
+    public void softDelete(Long id, CustomUserDetails userDetails) {
+        Post foundPost = postDomainUtils.validateUserAccessToPost(id, userDetails);
+        foundPost.softDelete();
     }
 
-    /*
-    서비스 단에서 사용할 권한 확인 용 메서드 : 반복되는 로직 메서드로 처리
-    -> 리팩토링 가능성 : 인가 유틸로 구조 변경뒤 해당 유틸의 메서드로도 활용 가능 (타입변수로 받으면 다른 도메인에서도 사용가능할수도?)
-    * */
-    private Post validateUserAccessToPost(Long id, CustomUserDetails userDetails) {
-        //로그인 한 User 엔티티
-        User foundUser = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(() -> new UserNotFoundException("정보와 일치하는 유저가 없습니다."));
-        //id 값으로 게시물 조회
-        Post foundPost = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("게시물 id를 확인해주세요."));
-
-        //로그인한 User 가 작성한 포스팅인지 검증 로직(인가)
-        if(!foundUser.getId().equals(foundPost.getUser().getId())) {
-            throw new UserMismatchException("내가 작성하지 않은 게시물은 삭제할 수 없습니다.");
-        }
-
-        return foundPost;
-    }
-
-    public Page<PostResponseDto> findPagedPostsByPeriod(Pageable pageable, LocalDate periodStart, LocalDate periodEnd) {
-        //예외?처리 날짜를 설정하지 않았을 시 전체 페이징 데이터 조회
+    public Page<PostResponseDto> findPagedPostsPeriodOrAll(Pageable pageable, LocalDate periodStart, LocalDate periodEnd) {
+        //날짜 관련 데이터를 동봉하지 않았을 시 발생되는 로직
         if(periodStart == null || periodEnd == null) {
-            return postRepository.findAll(pageable).map(PostResponseDto::from);
+            return postRepository.findAllByDeletedFalse(pageable).map(PostResponseDto::from);
         }
 
         //LocalDate -> Time 을 붙여 LocalDateTime 형식으로 바꿔주기
-        return postRepository.findByCreatedAtBetween(periodStart.atStartOfDay(), periodEnd.atTime(LocalTime.MAX), pageable).map(PostResponseDto::from);
+        return postRepository.findByCreatedAtBetweenAndDeletedFalse(periodStart.atStartOfDay(), periodEnd.atTime(LocalTime.MAX), pageable).map(PostResponseDto::from);
+    }
+
+    //사용자 논리적 삭제시 해당 메서드도 같이 사용해주면 작성자의 모든 Post 를 논리적삭제시킴
+    @Transactional
+    public void softDeletePostsByUserId(Long userId) {
+        postRepository.findAllByUserIdAndDeletedFalse(userId).forEach(Post::softDelete);
     }
 }

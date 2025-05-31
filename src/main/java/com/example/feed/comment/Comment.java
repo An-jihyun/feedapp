@@ -35,6 +35,7 @@ public class Comment extends BaseEntity {
     }
 
     public static Comment create(String content, User user, Post post) {
+
         return new Comment(content, user, post);
     }
 

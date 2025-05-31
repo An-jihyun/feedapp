@@ -30,7 +30,7 @@ public class CommentController {
             @Valid @RequestBody CreateCommentRequestDto requestDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        CommentResponseDto responseDto = commentService.createComment(postId, requestDto, userDetails.getUserId());
+        CommentResponseDto responseDto = commentService.createComment(postId, requestDto, userDetails.getUsername());
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 댓글이 작성되었습니다.", responseDto), HttpStatus.CREATED);
     }
 
@@ -69,9 +69,9 @@ public class CommentController {
     }
 
     @PatchMapping("/comments/{commentId}")
-    public  ResponseEntity<ApiResponse<Void>> update(
+    public ResponseEntity<ApiResponse<Void>> update(
             @PathVariable Long commentId,
-           @Valid @RequestBody UpdateCommentRequestDto dto,
+            @Valid @RequestBody UpdateCommentRequestDto dto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         commentService.updateComment(commentId, dto, userDetails.getUserId());
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 댓글이 수정되었습니다.", null), HttpStatus.OK);
@@ -83,6 +83,7 @@ public class CommentController {
             @PathVariable Long commentId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         commentService.deleteComment(commentId, userDetails.getUserId());
-        return new ResponseEntity<>(new ApiResponse<>("정상적으로 댓글이 삭제되었습니다.", null), HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(new ApiResponse<>("정상적으로 댓글이 삭제되었습니다.", null), HttpStatus.OK);
     }
 }
+
