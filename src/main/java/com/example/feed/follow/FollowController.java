@@ -1,4 +1,4 @@
-package com.example.feed.controller;
+package com.example.feed.follow;
 
 
 
@@ -9,7 +9,6 @@ import com.example.feed.follow.dto.FollowsRequestDto;
 import com.example.feed.follow.dto.FollowsResponseDto;
 import com.example.feed.follow.dto.UnfollowUserNameRequestDto;
 import com.example.feed.security.userDetail.CustomUserDetails;
-import com.example.feed.follow.FollowService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
