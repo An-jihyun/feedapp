@@ -1,8 +1,7 @@
 package com.example.feed.follow.dto;
 
 
-
-import com.example.feed.entity.User;
+import com.example.feed.user.User;
 
 public class FollowsResponseDto {
 
@@ -23,7 +22,4 @@ public class FollowsResponseDto {
         return id;
     }
 
-    public String getUsername() {
-        return username;
-    }
 }

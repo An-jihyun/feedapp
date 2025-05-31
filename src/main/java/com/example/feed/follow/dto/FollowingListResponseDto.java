@@ -1,6 +1,7 @@
 package com.example.feed.follow.dto;
 
-import com.example.feed.entity.User;
+
+import com.example.feed.user.User;
 
 public class FollowingListResponseDto {
 
