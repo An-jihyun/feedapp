@@ -28,8 +28,8 @@ public class CommentService {
     private final CommentDomainUtils commentDomainUtils;
 
 
-    public CommentResponseDto createComment(Long postId, CreateCommentRequestDto requestDto, Long userId) {
-        User user = commentDomainUtils.getCurrentUser(userId);
+    public CommentResponseDto createComment(Long postId, CreateCommentRequestDto requestDto, String email) {
+        User user = commentDomainUtils.getCurrentUser(email);
         Post post = commentDomainUtils.getPost(postId);
         Comment comment = Comment.create(requestDto.getContent(), user, post);
         return CommentResponseDto.from(commentRepository.save(comment));

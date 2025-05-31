@@ -30,7 +30,7 @@ public class CommentController {
             @Valid @RequestBody CreateCommentRequestDto requestDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        CommentResponseDto responseDto = commentService.createComment(postId, requestDto, userDetails.getUserId());
+        CommentResponseDto responseDto = commentService.createComment(postId, requestDto, userDetails.getUsername());
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 댓글이 작성되었습니다.", responseDto), HttpStatus.CREATED);
     }
 
