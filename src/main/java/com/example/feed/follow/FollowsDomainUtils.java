@@ -1,9 +1,10 @@
 package com.example.feed.follow;
 
 
-import com.example.feed.entity.User;
+
 import com.example.feed.exception.follows.*;
-import com.example.feed.repository.UserRepository;
+import com.example.feed.user.User;
+import com.example.feed.user.UserRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -61,9 +62,9 @@ public class FollowsDomainUtils {
     }
 
     //팔로우 삭제 -> 로그인 유저 팔로잉 삭제 예외처리
-    public Follow validFollowerExistUserAndNotFollowerUser(Long followerId,String username){
+    public Follow validFollowerExistUserAndNotFollowerUser(Long followerId,String email){
         //unfollow 유저 찾기
-        User followingUser = userRepository.findByUserName(username)
+        User followingUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new FollowerUserExistException("유저를 찾을 수 없습니다."));
         //follow 관계 찾기
         Follow follow = followsRepository.findByFollowerIdAndFollowingIdAndDeletedFalse(followerId, followingUser.getId())
