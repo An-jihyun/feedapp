@@ -30,8 +30,7 @@ public class User {
     private boolean isDeleted = false;
 
     //AuthService용으로 생성자를 추가하는게 맞는지 질문
-    public User(Long id, String userName, String email, String password) {
-        this.id = id;
+    public User(String userName, String email, String password) {
         this.userName = userName;
         this.email = email;
         this.password = password;

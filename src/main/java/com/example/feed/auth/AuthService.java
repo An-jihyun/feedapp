@@ -73,13 +73,14 @@ public class AuthService {
     public void signup(LoginRequestDto request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+
             throw new EmailAlreadyExistsException("이미 존재하는 이메일입니다: " + request.getEmail());
         }
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         User user = new User(
-                null,
+
                 request.getUserName(),
                 request.getEmail(),
                 encodedPassword
