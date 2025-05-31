@@ -2,6 +2,7 @@ package com.example.feed.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,6 +29,15 @@ public class User {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
+    //AuthService용으로 생성자를 추가하는게 맞는지 질문
+    public User(Long id, String userName, String email, String password) {
+        this.id = id;
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+        this.isDeleted = false;
+    }
+
     public void delete() {
         this.isDeleted = true;
     }
@@ -39,6 +49,12 @@ public class User {
 
     public void updatePassword(String newPassword) {
         this.password = newPassword;
+    }
+
+    public void validatePasswordFormat(String password) {
+        if (!isValidPasswordFormat(password)) {
+            throw new IllegalArgumentException("비밀번호 형식이 올바르지 않습니다.");
+        }
     }
 
     private boolean isValidPasswordFormat(String password) {

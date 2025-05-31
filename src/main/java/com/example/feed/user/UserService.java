@@ -63,10 +63,10 @@ public class UserService {
             throw new IllegalArgumentException("기존 비밀번호와 동일한 비밀번호로 변경할 수 없습니다.");
         }
 
-        if (!isValidPasswordFormat(dto.getNewPassword())) {
-            throw new IllegalArgumentException("비밀번호 형식이 올바르지 않습니다.");
-        }
+        // 1. 형식 검증
+        user.validatePasswordFormat(dto.getNewPassword());
 
+        // 2. 암호화 후 저장
         String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
         user.updatePassword(encodedNewPassword);
         userRepository.save(user);
