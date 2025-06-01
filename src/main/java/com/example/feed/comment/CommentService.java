@@ -3,6 +3,7 @@ package com.example.feed.comment;
 import com.example.feed.comment.dto.CommentResponseDto;
 import com.example.feed.comment.dto.CreateCommentRequestDto;
 import com.example.feed.comment.dto.UpdateCommentRequestDto;
+import com.example.feed.like.LikeRepository;
 import com.example.feed.like.LikeService;
 import com.example.feed.like.LikeTargetType;
 import com.example.feed.post.Post;
@@ -29,6 +30,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentDomainUtils commentDomainUtils;
     private final LikeService likeService;
+    private final LikeRepository likeRepository;
 
 
     public CommentResponseDto createComment(Long postId, CreateCommentRequestDto requestDto, String email) {
@@ -38,17 +40,29 @@ public class CommentService {
         return CommentResponseDto.from(commentRepository.save(comment));
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Page<CommentResponseDto> getCommentsByPost(Long postId, Pageable pageable) {
-        return commentRepository.findByPostIdAndDeletedFalse(postId, pageable)
-                .map(CommentResponseDto::from);
+
+        return commentRepository
+                .findByPostIdAndDeletedFalse(postId, pageable)
+                .map(comment -> CommentResponseDto.from(
+                        comment,
+                        likeRepository.countByTargetTypeAndTargetId(
+                                LikeTargetType.COMMENT, comment.getId())
+                ));
     }
 
     @Transactional(readOnly=true)
     public Page<CommentResponseDto> getCommentsByUser(Long userId,Pageable pageable) {
-        return commentRepository.findByUserIdAndDeletedFalse(userId, pageable)
-                .map(CommentResponseDto::from);
+        return commentRepository
+                .findByUserIdAndDeletedFalse(userId, pageable)
+                .map(comment -> CommentResponseDto.from(
+                        comment,
+                        likeRepository.countByTargetTypeAndTargetId(
+                                LikeTargetType.COMMENT, comment.getId())
+                ));
     }
+
 
 
     public void updateComment(Long commentId, UpdateCommentRequestDto requestDto, Long userId) {
