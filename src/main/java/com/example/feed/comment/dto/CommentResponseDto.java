@@ -16,14 +16,22 @@ public class CommentResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
+    private long likeCount;
 
 
-    public static CommentResponseDto from(Comment comment) {
-        return new CommentResponseDto(comment.getId(),
-                comment.getContent(),
-                comment.getUser().getUserName(),
-                comment.getCreatedAt(),
-                comment.getModifiedAt());
+    public static CommentResponseDto from(Comment c) {
+        return from(c, 0L);
+    }
+
+    public static CommentResponseDto from(Comment c, long likeCount) {
+        return new CommentResponseDto(
+                c.getId(),
+                c.getContent(),
+                c.getUser().getUserName(),
+                c.getCreatedAt(),
+                c.getModifiedAt(),
+                likeCount
+        );
     }
 
 }
