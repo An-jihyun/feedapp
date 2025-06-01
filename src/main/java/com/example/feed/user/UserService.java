@@ -17,14 +17,14 @@ public class UserService {
 
     //회원 탈퇴
     public void deleteUser(DeleteUserRequestDto requestDto) {
-        User user = userRepository.findByEmailAndIsDeletedFalse(requestDto.getEmail())
+        User user = userRepository.findByEmailAndDeletedFalse(requestDto.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않거나 이미 탈퇴한 사용자입니다."));
 
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        user.delete();
+        user.softDelete();
         userRepository.save(user);
     }
     // 프로필 조회
@@ -32,7 +32,7 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        if (user.isDeleted()) {
+        if (user.getDeleted()) {
             throw new IllegalStateException("탈퇴한 사용자입니다.");
         }
 
@@ -43,7 +43,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        if (user.isDeleted()) {
+        if (user.getDeleted()) {
             throw new IllegalStateException("탈퇴한 사용자는 수정할 수 없습니다.");
         }
 
