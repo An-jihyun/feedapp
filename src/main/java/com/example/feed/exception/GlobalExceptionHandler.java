@@ -1,8 +1,7 @@
 package com.example.feed.exception;
 
 
-import com.example.feed.common.dto.ErrorResponse;
-import com.example.feed.exception.follows.*;
+import com.example.feed.common.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

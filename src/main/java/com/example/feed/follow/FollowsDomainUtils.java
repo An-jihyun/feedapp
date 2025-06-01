@@ -2,7 +2,7 @@ package com.example.feed.follow;
 
 
 
-import com.example.feed.exception.follows.*;
+import com.example.feed.exception.*;
 import com.example.feed.user.User;
 import com.example.feed.user.UserRepository;
 import org.springframework.stereotype.Component;

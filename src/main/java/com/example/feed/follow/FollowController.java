@@ -1,9 +1,7 @@
 package com.example.feed.follow;
 
 
-
-import com.example.feed.auth.AuthService;
-import com.example.feed.common.dto.ApiResponse;
+import com.example.feed.common.ApiResponse;
 import com.example.feed.follow.dto.FollowingListResponseDto;
 import com.example.feed.follow.dto.FollowsRequestDto;
 import com.example.feed.follow.dto.FollowsResponseDto;
@@ -23,7 +21,6 @@ import java.util.List;
 @RequestMapping("api/users")
 public class FollowController {
 
-    private final AuthService authService;
     private final FollowService followService;
 
 
@@ -80,9 +77,9 @@ public class FollowController {
     @DeleteMapping("/follows")
     public ResponseEntity<ApiResponse<Void>> followDeleteAPI(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody UnfollowUserNameRequestDto reqeustDto) {
+            @RequestBody UnfollowUserNameRequestDto requestDto) {
 
-            followService.softDeleteUnFollow(userDetails,reqeustDto.getUsername());
+            followService.softDeleteUnFollow(userDetails,requestDto.getUsername());
 
             return new  ResponseEntity<>(new ApiResponse<>("언팔로우 성공",null),HttpStatus.OK);
     }

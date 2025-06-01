@@ -1,4 +1,4 @@
-package com.example.feed.exception.follows;
+package com.example.feed.exception;
 
 public class FollowerUserExistException extends RuntimeException{
     public FollowerUserExistException(String message){
