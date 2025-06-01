@@ -4,6 +4,7 @@ import com.example.feed.common.ApiResponse;
 import com.example.feed.post.dto.request.CreatePostRequestDto;
 import com.example.feed.post.dto.request.UpdatePostRequestDto;
 import com.example.feed.post.dto.response.PostResponseDto;
+import com.example.feed.post.dto.response.PostWithCommentsResponseDto;
 import com.example.feed.security.userDetail.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,7 @@ public class PostController {
 
     //post 식별자를 사용한 단건 조회
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<PostResponseDto>> findById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<PostWithCommentsResponseDto>> findById(@PathVariable Long id) {
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 조회되었습니다.", postService.findById(id)), HttpStatus.OK);
     }
 
@@ -52,12 +53,22 @@ public class PostController {
 
     //게시물 전체 조회 페이지네이션, 검색조건(시작, 종료일) 포함
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<PostResponseDto>>> findPagedPostsByPeriod(
+    public ResponseEntity<ApiResponse<Page<PostWithCommentsResponseDto>>> findPagedPostsByPeriod(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
             @DateTimeFormat(pattern = "yyyyMMdd") LocalDate periodStart, @DateTimeFormat(pattern = "yyyyMMdd") LocalDate periodEnd
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 조회되었습니다.", postService.findPagedPostsPeriodOrAll(pageable, periodStart, periodEnd)), HttpStatus.OK);
+    }
+
+    //팔로우한 대상들의 게시물 전체 조회 페이지네이션, 검색조건(시작, 종료일) 포함
+    @GetMapping("/follows")
+    public ResponseEntity<ApiResponse<Page<PostWithCommentsResponseDto>>> findFollowersPosts(
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
+            @DateTimeFormat(pattern = "yyyyMMdd") LocalDate periodStart, @DateTimeFormat(pattern = "yyyyMMdd") LocalDate periodEnd, @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
+        return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 조회되었습니다.", postService.findFollowersPosts(pageable, periodStart, periodEnd, userDetails)), HttpStatus.OK);
     }
 
 }
