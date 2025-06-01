@@ -1,6 +1,8 @@
 package com.example.feed.follow;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,4 +18,7 @@ public interface FollowsRepository extends JpaRepository<Follow,Long> {
     //단건 조회 및 예외처리
     Optional<Follow> findByFollowerIdAndFollowingIdAndDeletedFalse(Long followerId, Long followingId);
 
+    //jh-탈퇴 시 유저가 연관된 모든 Follow 관계 (팔로워 or 팔로잉)
+    @Query("SELECT f FROM Follow f WHERE (f.follower.id = :userId OR f.following.id = :userId) AND f.deleted = false")
+    List<Follow> findAllByUserId(@Param("userId") Long userId);
 }
