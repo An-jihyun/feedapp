@@ -2,11 +2,16 @@ package com.example.feed.comment.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * Jackson 역직렬화를 위한 기본 생성자입니다.
+ * 일반 코드에서 직접 new로 생성하지 않도록 protected로 제한합니다.
+ */
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@NoArgsConstructor
 public class CreateCommentRequestDto {
 
     @NotNull(message = "댓글 내용을 입력하세요")
