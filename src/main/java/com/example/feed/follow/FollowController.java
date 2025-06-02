@@ -1,86 +1,91 @@
 package com.example.feed.follow;
 
+import java.util.List;
 
-
-import com.example.feed.auth.AuthService;
-import com.example.feed.common.ApiResponse;
-import com.example.feed.follow.dto.*;
-import com.example.feed.security.userDetail.CustomUserDetails;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.example.feed.common.ApiResponse;
+import com.example.feed.follow.dto.FollowingListResponseDto;
+import com.example.feed.follow.dto.FollowsRequestDto;
+import com.example.feed.follow.dto.FollowsResponseDto;
+import com.example.feed.follow.dto.UnfollowRequestDto;
+import com.example.feed.security.userDetail.CustomUserDetails;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/users")
 public class FollowController {
 
-    private final AuthService authService;
-    private final FollowService followService;
+	private final FollowService followService;
 
+	// 팔로우 생성하기
+	@PostMapping("/follows")
+	public ResponseEntity<ApiResponse<FollowsResponseDto>> followCreateAPI(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@Valid @RequestBody FollowsRequestDto requestDto) {
 
-    // 팔로우 생성하기
-    @PostMapping("/follows")
-    public ResponseEntity<ApiResponse<FollowsResponseDto>> followCreateAPI(
-           @AuthenticationPrincipal CustomUserDetails userDetails,
-           @Valid @RequestBody FollowsRequestDto requestDto
-            ) {
-        FollowsResponseDto followed = followService.follow(userDetails, requestDto);
-        return new ResponseEntity<>(new ApiResponse<>("팔로우정상완료",followed),HttpStatus.CREATED);
-    }
+		FollowsResponseDto followed = followService.follow(userDetails, requestDto);
+		return new ResponseEntity<>(new ApiResponse<>("팔로우정상완료", followed), HttpStatus.CREATED);
+	}
 
-    //로그인한 유저의 팔로잉 전체조회
+	//로그인한 유저의 팔로잉 전체조회
+	@GetMapping("/me/followings")
+	public ResponseEntity<ApiResponse<List<FollowingListResponseDto>>> followingListAPI(
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-    @GetMapping("/me/followings")
+		List<FollowingListResponseDto> followingList = followService.getFollowings(userDetails);
+		return new ResponseEntity<>(new ApiResponse<>("팔로잉 목록 조회 성공", followingList), HttpStatus.OK);
+	}
 
-    public ResponseEntity<ApiResponse<List<FollowingListResponseDto>>> followingListAPI(
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        List<FollowingListResponseDto> followingList = followService.getFollowings(userDetails);
+	//팔로잉 단건 조회
+	@GetMapping("/me/following/{followingId}")
+	public ResponseEntity<ApiResponse<FollowsResponseDto>> followingByIdAPI(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable Long followingId) {
 
-        return new  ResponseEntity<>(new ApiResponse<>("팔로잉 목록 조회 성공",followingList),HttpStatus.OK);
-    }
+		FollowsResponseDto userIdAndFollowingUserId = followService.getFollowing(userDetails, followingId);
+		return new ResponseEntity<>(new ApiResponse<>("팔로잉 단건 조회 성공", userIdAndFollowingUserId), HttpStatus.OK);
+	}
 
-    //팔로잉 단건 조회
-    @GetMapping("/me/following/{followingId}")
-    public ResponseEntity<ApiResponse<FollowsResponseDto>> followingByIdAPI(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long followingId) {
-        FollowsResponseDto userIdAndFollowingUserId = followService.getFollowing(userDetails, followingId);
-        return new ResponseEntity<> (new ApiResponse<>("팔로잉 단건 조회 성공",userIdAndFollowingUserId),HttpStatus.OK);
+	//팔로워 전체 조회
+	@GetMapping("/me/followers")
+	public ResponseEntity<ApiResponse<List<FollowingListResponseDto>>> followerListAPI(
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-    }
-    //팔로워 전체 조회
-    @GetMapping("/me/followers")
-    public ResponseEntity<ApiResponse<List<FollowingListResponseDto>>> followerListAPI(
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<FollowingListResponseDto> followersList = followService.getFollowers(userDetails);
-        return new ResponseEntity<>(new ApiResponse<>("팔로워 목록 조회 성공",followersList),HttpStatus.OK );
-    }
+		List<FollowingListResponseDto> followersList = followService.getFollowers(userDetails);
+		return new ResponseEntity<>(new ApiResponse<>("팔로워 목록 조회 성공", followersList), HttpStatus.OK);
+	}
 
-    //팔로워 단건 조회
-    @GetMapping("/me/followers/{followerId}")
-    public ResponseEntity<ApiResponse<FollowsResponseDto>> followerByIdAPI(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long followerId
-    ) {
-        FollowsResponseDto followerUser = followService.getFollower(userDetails, followerId);
-        return new ResponseEntity<>(new ApiResponse<>("팔로워 단건 조회 성공",followerUser),HttpStatus.OK);
-    }
+	//팔로워 단건 조회
+	@GetMapping("/me/followers/{followerId}")
+	public ResponseEntity<ApiResponse<FollowsResponseDto>> followerByIdAPI(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable Long followerId) {
 
-    //팔로우 삭제
-    @DeleteMapping("/follows")
-    public ResponseEntity<ApiResponse<Void>> followDeleteAPI(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody UnfollowRequestDto reqeustDto) {
+		FollowsResponseDto followerUser = followService.getFollower(userDetails, followerId);
+		return new ResponseEntity<>(new ApiResponse<>("팔로워 단건 조회 성공", followerUser), HttpStatus.OK);
+	}
 
-            followService.softDeleteFollow(userDetails,reqeustDto.getUsername());
+	//팔로우 삭제
+	@DeleteMapping("/follows")
+	public ResponseEntity<ApiResponse<Void>> followDeleteAPI(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestBody UnfollowRequestDto reqeustDto) {
 
-            return new  ResponseEntity<>(new ApiResponse<>("언팔로우 성공",null),HttpStatus.OK);
-    }
+		followService.softDeleteFollow(userDetails, reqeustDto.getUsername());
+		return new ResponseEntity<>(new ApiResponse<>("언팔로우 성공", null), HttpStatus.OK);
+	}
+
 }

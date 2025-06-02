@@ -6,10 +6,10 @@ import lombok.Getter;
 @Getter
 public class UpdatePostRequestDto {
 
-    @Size(max = 20, message = "제목은 20자 이내로 작성가능합니다.")
-    private String title;
+	@Size(max = 20, message = "제목은 20자 이내로 작성가능합니다.")
+	private String title;
 
-    @Size(min = 5, max = 200, message = "작성글은 5~200자 이내로 작성가능합니다.")
-    private String content;
+	@Size(min = 5, max = 200, message = "작성글은 5~200자 이내로 작성가능합니다.")
+	private String content;
 
 }

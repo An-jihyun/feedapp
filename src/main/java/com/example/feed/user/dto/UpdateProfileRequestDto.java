@@ -4,6 +4,8 @@ import lombok.Getter;
 
 @Getter
 public class UpdateProfileRequestDto {
-    private String userName;
-    private String email;
+
+	private String userName;
+	private String email;
+
 }
