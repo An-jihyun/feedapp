@@ -1,5 +1,6 @@
 package com.example.feed.comment;
 
+import com.example.feed.post.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +22,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     //단건 조회
     Optional<Comment> findByIdAndDeletedFalse(Long id);
+
+    //Post 도메인에서 사용할 메서드 deleted = false 인 코멘트를 리스트에 담아 반환
+    List<Comment> findAllByDeletedFalse();
 }

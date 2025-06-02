@@ -3,7 +3,7 @@ package com.example.feed.follow;
 
 
 import com.example.feed.auth.AuthService;
-import com.example.feed.common.dto.ApiResponse;
+import com.example.feed.common.ApiResponse;
 import com.example.feed.follow.dto.*;
 import com.example.feed.security.userDetail.CustomUserDetails;
 import jakarta.validation.Valid;

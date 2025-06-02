@@ -3,6 +3,7 @@ package com.example.feed.user;
 import com.example.feed.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,12 +27,20 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private boolean isDeleted = false;
+//    @Column(nullable = false)
+//    private boolean isDeleted = false;
 
-    public void delete() {
-        this.isDeleted = true;
+    //AuthService용으로 생성자를 추가하는게 맞는지 질문
+    public User(String userName, String email, String password) {
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+//        this.isDeleted = false;
     }
+
+//    public void delete() {
+//        this.isDeleted = true;
+//    }
 
     public void updateProfile(String userName, String email) {
         this.userName = userName;
@@ -40,6 +49,12 @@ public class User extends BaseEntity {
 
     public void updatePassword(String newPassword) {
         this.password = newPassword;
+    }
+
+    public void validatePasswordFormat(String password) {
+        if (!isValidPasswordFormat(password)) {
+            throw new IllegalArgumentException("비밀번호 형식이 올바르지 않습니다.");
+        }
     }
 
     private boolean isValidPasswordFormat(String password) {

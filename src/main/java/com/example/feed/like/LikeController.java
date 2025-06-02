@@ -1,6 +1,6 @@
 package com.example.feed.like;
 
-import com.example.feed.common.dto.ApiResponse;
+import com.example.feed.common.ApiResponse;
 import com.example.feed.like.dto.LikeResponseDto;
 import com.example.feed.security.userDetail.CustomUserDetails;
 import lombok.RequiredArgsConstructor;

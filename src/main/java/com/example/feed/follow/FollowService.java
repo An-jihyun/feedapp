@@ -95,4 +95,13 @@ public class FollowService {
         follow.softDelete();
     }
 
+    //jh-user삭제시 연관 팔로우 삭제
+    @Transactional
+    public void softDeleteFollowsByUserId(Long userId) {
+        List<Follow> follows = followsRepository.findAllByUserId(userId); // 아래 설명
+        for (Follow follow : follows) {
+            follow.softDelete();
+        }
+    }
+
 }

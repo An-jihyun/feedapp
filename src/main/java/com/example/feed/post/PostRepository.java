@@ -14,4 +14,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByCreatedAtBetweenAndDeletedFalse(LocalDateTime periodStart, LocalDateTime periodEnd, Pageable pageable);
     List<Post> findAllByUserIdAndDeletedFalse(Long userid);
 
+    //팔로잉한 대상들의 페이징 객체
+    Page<Post> findByUserIdInAndDeletedFalse(List<Long> userIds, Pageable pageable);
+    Page<Post> findByUserIdInAndCreatedAtBetweenAndDeletedFalse(List<Long> userIds, LocalDateTime periodStart, LocalDateTime periodEnd, Pageable pageable);
+
 }

@@ -3,7 +3,7 @@ package com.example.feed.comment;
 import com.example.feed.comment.dto.CommentResponseDto;
 import com.example.feed.comment.dto.CreateCommentRequestDto;
 import com.example.feed.comment.dto.UpdateCommentRequestDto;
-import com.example.feed.common.dto.ApiResponse;
+import com.example.feed.common.ApiResponse;
 import com.example.feed.security.userDetail.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
