@@ -4,13 +4,14 @@ import com.example.feed.common.BaseEntity;
 import com.example.feed.post.dto.request.UpdatePostRequestDto;
 import com.example.feed.user.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
 @Table(name = "posts")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseEntity {
 
     @Id
