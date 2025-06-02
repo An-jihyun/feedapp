@@ -11,4 +11,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmailAndDeletedFalse(String email);
    // 탈퇴하지 않은 사용자만 조회 (ID 기준)
     Optional<User> findByIdAndDeletedFalse(Long id);
+    //언팔로우(username 기준)
+    Optional<User> findByUserNameAndDeletedFalse(String userName);
 }

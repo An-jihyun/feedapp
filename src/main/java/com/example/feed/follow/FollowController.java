@@ -1,11 +1,10 @@
 package com.example.feed.follow;
 
 
+
+import com.example.feed.auth.AuthService;
 import com.example.feed.common.ApiResponse;
-import com.example.feed.follow.dto.FollowingListResponseDto;
-import com.example.feed.follow.dto.FollowsRequestDto;
-import com.example.feed.follow.dto.FollowsResponseDto;
-import com.example.feed.follow.dto.UnfollowUserNameRequestDto;
+import com.example.feed.follow.dto.*;
 import com.example.feed.security.userDetail.CustomUserDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +20,7 @@ import java.util.List;
 @RequestMapping("api/users")
 public class FollowController {
 
+    private final AuthService authService;
     private final FollowService followService;
 
 
@@ -38,7 +38,7 @@ public class FollowController {
 
     @GetMapping("/me/followings")
 
-    public ResponseEntity<ApiResponse<List<FollowingListResponseDto>>> createFollowAPI(
+    public ResponseEntity<ApiResponse<List<FollowingListResponseDto>>> followingListAPI(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         List<FollowingListResponseDto> followingList = followService.getFollowings(userDetails);
@@ -77,9 +77,9 @@ public class FollowController {
     @DeleteMapping("/follows")
     public ResponseEntity<ApiResponse<Void>> followDeleteAPI(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody UnfollowUserNameRequestDto requestDto) {
+            @RequestBody UnfollowRequestDto reqeustDto) {
 
-            followService.softDeleteUnFollow(userDetails,requestDto.getUsername());
+            followService.softDeleteFollow(userDetails,reqeustDto.getUsername());
 
             return new  ResponseEntity<>(new ApiResponse<>("언팔로우 성공",null),HttpStatus.OK);
     }
