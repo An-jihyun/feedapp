@@ -79,7 +79,7 @@ public class FollowController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody UnfollowRequestDto reqeustDto) {
 
-            followService.softDeleteUnFollow(userDetails,reqeustDto.getUsername());
+            followService.softDeleteFollow(userDetails,reqeustDto.getUsername());
 
             return new  ResponseEntity<>(new ApiResponse<>("언팔로우 성공",null),HttpStatus.OK);
     }

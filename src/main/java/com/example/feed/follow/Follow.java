@@ -33,7 +33,7 @@ public class Follow extends BaseEntity {
     @Column(nullable = false)
     private boolean deleted = false;
 
-    private Follow(User follower, User following){
+    protected Follow(User follower, User following){
         this.follower = follower;
         this.following = following;
     }

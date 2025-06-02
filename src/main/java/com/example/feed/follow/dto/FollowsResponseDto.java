@@ -31,4 +31,7 @@ public class FollowsResponseDto {
         return id;
     }
 
+    public String getUsername() {
+        return username;
+    }
 }
