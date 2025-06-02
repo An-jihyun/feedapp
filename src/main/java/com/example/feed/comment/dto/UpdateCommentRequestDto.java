@@ -7,8 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * Jackson 바인딩을 위한 기본 생성자입니다.
- * 외부 생성 방지를 위해 protected로 제한합니다.
+ * Jackson 역직렬화를 위한 기본 생성자입니다.
+ * 일반 코드에서 직접 new로 생성하지 않도록 protected로 제한합니다.
  */
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter

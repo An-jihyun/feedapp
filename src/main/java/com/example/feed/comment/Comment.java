@@ -9,8 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * JPA가 내부적으로 엔티티 객체를 생성할 때 기본 생성자가 필요합니다.
- * 직접 new로 생성하는 것을 막기 위해 protected로 설정했습니다.
+ * JPA(Hibernate)가 리플렉션으로 객체를 생성할 수 있도록 기본 생성자를 제공합니다.
+ * 일반 코드에서는 직접 new 하지 말고 Comment.create(...) 팩토리 메서드를 사용하세요.
  */
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
