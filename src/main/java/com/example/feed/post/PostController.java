@@ -28,32 +28,32 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<PostResponseDto>> save(@Valid @RequestBody CreatePostRequestDto cDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 저장되었습니다.", postService.save(userDetails, cDto)), HttpStatus.CREATED);
+    public ResponseEntity<ApiResponse<PostResponseDto>> savePost(@Valid @RequestBody CreatePostRequestDto cDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 저장되었습니다.", postService.saveNewPost(userDetails, cDto)), HttpStatus.CREATED);
     }
 
     //update 메서드, 권한확인을 위한 userDetails 객체 포함
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<PostResponseDto>> update(@PathVariable Long id, @Valid @RequestBody UpdatePostRequestDto uDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 저장되었습니다.", postService.update(id, userDetails, uDto)), HttpStatus.OK);
+    public ResponseEntity<ApiResponse<PostResponseDto>> updatePost(@PathVariable Long id, @Valid @RequestBody UpdatePostRequestDto uDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 저장되었습니다.", postService.updatePostIfAuthor(id, userDetails, uDto)), HttpStatus.OK);
     }
 
     //post 식별자를 사용한 단건 조회
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<PostWithCommentsResponseDto>> findById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<PostWithCommentsResponseDto>> getPostById(@PathVariable Long id) {
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 조회되었습니다.", postService.findById(id)), HttpStatus.OK);
     }
 
     //post 식별자를 사용한 게시물 삭제, 권한확인을 위한 userDetails 객체 포함
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        postService.softDelete(id, userDetails);
+    public ResponseEntity<ApiResponse<Void>> softDeletePost(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        postService.softDeletePostWithOrphans(id, userDetails);
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 게시물이 삭제되었습니다.", null), HttpStatus.OK);
     }
 
     //게시물 전체 조회 페이지네이션, 검색조건(시작, 종료일) 포함
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<PostWithCommentsResponseDto>>> findPagedPostsByPeriod(
+    public ResponseEntity<ApiResponse<Page<PostWithCommentsResponseDto>>> getPagedPostsByPeriod(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
             @DateTimeFormat(pattern = "yyyyMMdd") LocalDate periodStart, @DateTimeFormat(pattern = "yyyyMMdd") LocalDate periodEnd
     ) {
@@ -63,7 +63,7 @@ public class PostController {
 
     //팔로우한 대상들의 게시물 전체 조회 페이지네이션, 검색조건(시작, 종료일) 포함
     @GetMapping("/follows")
-    public ResponseEntity<ApiResponse<Page<PostWithCommentsResponseDto>>> findFollowersPosts(
+    public ResponseEntity<ApiResponse<Page<PostWithCommentsResponseDto>>> getFollowersPosts(
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
             @DateTimeFormat(pattern = "yyyyMMdd") LocalDate periodStart, @DateTimeFormat(pattern = "yyyyMMdd") LocalDate periodEnd, @AuthenticationPrincipal CustomUserDetails userDetails
     ) {

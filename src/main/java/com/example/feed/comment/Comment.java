@@ -4,12 +4,17 @@ import com.example.feed.common.BaseEntity;
 import com.example.feed.post.Post;
 import com.example.feed.user.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * JPA(Hibernate)가 리플렉션으로 객체를 생성할 수 있도록 기본 생성자를 제공합니다.
+ * 일반 코드에서는 직접 new 하지 말고 Comment.create(...) 팩토리 메서드를 사용하세요.
+ */
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
-@NoArgsConstructor
 @Table(name = "comments")
 public class Comment extends BaseEntity {
 

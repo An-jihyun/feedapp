@@ -20,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,20 +27,24 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final CommentDomainUtils commentDomainUtils;
-    private final LikeService likeService;
     private final LikeRepository likeRepository;
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
+    private final LikeService likeService;
 
 
-    public CommentResponseDto createComment(Long postId, CreateCommentRequestDto requestDto, String email) {
-        User user = commentDomainUtils.getCurrentUser(email);
-        Post post = commentDomainUtils.getPost(postId);
+
+
+    public CommentResponseDto saveComment(Long postId, CreateCommentRequestDto requestDto, String email) {
+        User user = getCurrentUser(email);
+        Post post = getPost(postId);
         Comment comment = Comment.create(requestDto.getContent(), user, post);
+        //좋아요 수는 초기에 0으로 설정
         return CommentResponseDto.from(commentRepository.save(comment));
     }
 
     @Transactional(readOnly = true)
-    public Page<CommentResponseDto> getCommentsByPost(Long postId, Pageable pageable) {
+    public Page<CommentResponseDto> readCommentsByPost(Long postId, Pageable pageable) {
 
         return commentRepository
                 .findByPostIdAndDeletedFalse(postId, pageable)
@@ -52,8 +55,8 @@ public class CommentService {
                 ));
     }
 
-    @Transactional(readOnly=true)
-    public Page<CommentResponseDto> getCommentsByUser(Long userId,Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<CommentResponseDto> readCommentsByUser(Long userId,Pageable pageable) {
         return commentRepository
                 .findByUserIdAndDeletedFalse(userId, pageable)
                 .map(comment -> CommentResponseDto.from(
@@ -64,16 +67,52 @@ public class CommentService {
     }
 
 
-
-    public void updateComment(Long commentId, UpdateCommentRequestDto requestDto, Long userId) {
-        commentDomainUtils.validateAndGetComment(commentId, userId).updateContent(requestDto.getContent());
+    public CommentResponseDto updateCommentContent(Long commentId, UpdateCommentRequestDto requestDto, Long userId) {
+        Comment comment = validateAndGetComment(commentId, userId);
+        comment.updateContent(requestDto.getContent());
+        long likeCount = likeRepository.countByTargetTypeAndTargetId(LikeTargetType.COMMENT, comment.getId());
+        return CommentResponseDto.from(comment, likeCount);
     }
 
 
-    public void deleteComment(Long commentId, Long userId) {
+    public void removeComment(Long commentId, Long userId) {
         likeService.deleteAllLikesByTargetId(LikeTargetType.COMMENT, commentId);
-        commentDomainUtils.validateAndGetComment(commentId, userId).softDelete();
+        validateAndGetComment(commentId, userId).softDelete();
     }
+
+// ================= 헬퍼 메서드 =================
+
+    //현재 로그인 사용자 조회
+    public User getCurrentUser(String email) {
+        return userRepository.findByEmailAndDeletedFalse(email)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+    }
+
+    //댓글 단건 조회
+    public Comment getComment(Long commentId) {
+        return commentRepository.findByIdAndDeletedFalse(commentId)
+                .orElseThrow(() -> new CommentNotFoundException("댓글이 존재하지 않습니다."));
+    }
+
+    //게시글 조회
+    public Post getPost(Long postId) {
+        return postRepository.findByIdAndDeletedFalse(postId)
+                .orElseThrow(() -> new PostNotFoundException("게시글을 찾을 수 없습니다."));
+    }
+
+    /* 댓글 수정·삭제 권한 검증 후 Comment 반환
+    댓글 작성자이거나, 댓글이 달린 게시글의 작성자**/
+
+    public Comment validateAndGetComment(Long commentId, Long currentUserId) {
+        Comment comment = getComment(commentId);
+        boolean isAuthor    = comment.getUser().getId().equals(currentUserId);
+        boolean isPostOwner = comment.getPost().getUser().getId().equals(currentUserId);
+        if (!isAuthor && !isPostOwner) {
+            throw new UserMismatchException("댓글에 대한 권한이 없습니다.");
+        }
+        return comment;
+    }
+
 
     //상위 도메인 호출 용(soft delete)
     public void softDeleteCommentsByPostId(Long postId) {
@@ -88,8 +127,5 @@ public class CommentService {
             comment.softDelete(); // 댓글 삭제
         });
     }
-
-
-
 }
 
