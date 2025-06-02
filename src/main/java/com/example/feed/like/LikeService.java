@@ -111,12 +111,12 @@ public class LikeService {
     }
 
     private Post findPostById(Long postId) {
-        return postRepository.findById(postId)
+        return postRepository.findByIdAndDeletedFalse(postId)
                 .orElseThrow(() -> new PostNotFoundException("게시물을 찾을 수 없습니다."));
     }
 
     private Comment findCommentById(Long commentId) {
-        return commentRepository.findById(commentId)
+        return commentRepository.findByIdAndDeletedFalse(commentId)
                 .orElseThrow(() -> new CommentNotFoundException("댓글을 찾을 수 없습니다."));
     }
 }
