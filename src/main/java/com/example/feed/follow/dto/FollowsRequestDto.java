@@ -11,7 +11,7 @@ public class FollowsRequestDto {
         this.userId = userId;
     }
 
-    public Long getuserId() {
+    public Long getUserId() {
         return userId;
     }
 }

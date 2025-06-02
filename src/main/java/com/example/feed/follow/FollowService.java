@@ -35,7 +35,7 @@ public class FollowService {
         //로그인 사용자 Id
         Long followerId = userDetails.getUserId();
         //팔로잉 대상 Id
-        Long followingId = requestDto.getuserId();
+        Long followingId = requestDto.getUserId();
         //자기 자신 팔로우 금지 도메인 유틸 메서드로 활용
         followsDomainUtils.validateNotSelfFollow(followerId,followingId);
         //팔로우 중복 금지 예외처리
@@ -45,9 +45,9 @@ public class FollowService {
         User following = followsDomainUtils.validFollowUserNotFound(followingId);
 
         //follow 객체 생성
-        Follow follow = new Follow(follower, following);
+        Follow follow = Follow.of(follower,following);
         followsRepository.save(follow);
-        return new FollowsResponseDto(following);
+        return FollowsResponseDto.from(follow);
     }
 
     //팔로잉 목록 전체 조회
@@ -65,7 +65,7 @@ public class FollowService {
         Long userId = userDetails.getUserId();
         //팔로잉 여부 유틸 메서드로 활용
         Follow follow = followsDomainUtils.validNotFollowingUser(userId,followingId);
-        return new FollowsResponseDto(follow.getFollowing());
+        return FollowsResponseDto.from(follow);
 
     }
 
@@ -83,7 +83,7 @@ public class FollowService {
         Long userId = userDetails.getUserId();
         //팔로워 여부 유틸 메서드로 활용
         Follow follow =followsDomainUtils.validNotFollowerUser(userId,followerId);
-        return new FollowsResponseDto(follow.getFollower());
+        return FollowsResponseDto.fromFollower(follow);
     }
 
     //팔로우 삭제

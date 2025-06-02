@@ -35,11 +35,16 @@ public class Follow extends BaseEntity {
     @Column(nullable = false)
     private boolean deleted = false;
 
-    public Follow(User follower, User following){
+    private Follow(User follower, User following){
         this.follower = follower;
         this.following = following;
     }
 
+
+
+    public static Follow of(User follower, User following) {
+        return new Follow(follower,following);
+    }
     public void softDelete(){
         this.deleted =true;
     }
