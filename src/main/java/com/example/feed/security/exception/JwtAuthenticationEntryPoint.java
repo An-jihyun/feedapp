@@ -1,38 +1,41 @@
 package com.example.feed.security.exception;
 
-import com.example.feed.security.jwt.JwtExceptionType;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import com.example.feed.security.jwt.JwtExceptionType;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    @Override
-    public void commence(HttpServletRequest request,
-                         HttpServletResponse response,
-                         AuthenticationException authException) throws IOException {
+	@Override
+	public void commence(HttpServletRequest request,
+		HttpServletResponse response,
+		AuthenticationException authException) throws IOException {
 
-        // Filter 에서 설정한 예외 정보 먼저 확인
-        String errorCode = (String) request.getAttribute("exception");
-        if (errorCode == null) {
-            errorCode = authException.getMessage();
-        }
+		// Filter 에서 설정한 예외 정보 먼저 확인
+		String errorCode = (String)request.getAttribute("exception");
+		if (errorCode == null) {
+			errorCode = authException.getMessage();
+		}
 
-        JwtExceptionType exceptionType;
+		JwtExceptionType exceptionType;
 
-        try {
-            exceptionType = JwtExceptionType.valueOf(errorCode);
-        } catch (IllegalArgumentException | NullPointerException e) {
-            exceptionType = JwtExceptionType.AUTHENTICATION_REQUIRED;
-        }
+		try {
+			exceptionType = JwtExceptionType.valueOf(errorCode);
+		} catch (IllegalArgumentException | NullPointerException e) {
+			exceptionType = JwtExceptionType.AUTHENTICATION_REQUIRED;
+		}
 
-        response.setStatus(exceptionType.getStatus());
-        response.setContentType("application/json;charset=UTF-8");
-        response.getWriter().write("{\"error\": \"" + exceptionType.getMessage() + "\"}");
-    }
+		response.setStatus(exceptionType.getStatus());
+		response.setContentType("application/json;charset=UTF-8");
+		response.getWriter().write("{\"error\": \"" + exceptionType.getMessage() + "\"}");
+	}
+
 }

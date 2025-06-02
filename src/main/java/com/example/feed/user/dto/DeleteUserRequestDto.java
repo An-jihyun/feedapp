@@ -4,6 +4,8 @@ import lombok.Getter;
 
 @Getter
 public class DeleteUserRequestDto {
-    private String email;
-    private String password;
+
+	private String email;
+	private String password;
+
 }

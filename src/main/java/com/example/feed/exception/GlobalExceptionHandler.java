@@ -1,8 +1,7 @@
 package com.example.feed.exception;
 
+import java.util.Objects;
 
-import com.example.feed.common.ErrorResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,126 +11,150 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Objects;
+import com.example.feed.common.ErrorResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handlerUserNotFoundException(UserNotFoundException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handlerUserNotFoundException(UserNotFoundException ex,
+		HttpServletRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-    }
+		return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+	}
 
-    @ExceptionHandler(PostNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handlerPostNotFoundException(PostNotFoundException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+	@ExceptionHandler(PostNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handlerPostNotFoundException(PostNotFoundException ex,
+		HttpServletRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-    }
+		return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+	}
 
-    // 인가 실패 -> 로그인한 유저의 식별자와 게시물의 userId 일치하지 않음
-    @ExceptionHandler(UserMismatchException.class)
-    public ResponseEntity<ErrorResponse> handlerUserMismatchException(UserMismatchException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+	// 인가 실패 -> 로그인한 유저의 식별자와 게시물의 userId 일치하지 않음
+	@ExceptionHandler(UserMismatchException.class)
+	public ResponseEntity<ErrorResponse> handlerUserMismatchException(UserMismatchException ex,
+		HttpServletRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
-    }
+		return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+	}
 
-    @ExceptionHandler(CommentNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleCommentNotFoundException(CommentNotFoundException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-    }
+	@ExceptionHandler(CommentNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleCommentNotFoundException(CommentNotFoundException ex,
+		HttpServletRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+		return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+	}
 
-    //@Valid에서 검증 실패
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(
-            MethodArgumentNotValidException ex,
-            HttpServletRequest request) {
+	//@Valid 에서 검증 실패
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ErrorResponse> handleValidationExceptions(
+		MethodArgumentNotValidException ex,
+		HttpServletRequest request) {
 
-        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
-                .map(FieldError::getDefaultMessage)
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse("유효성 검사 실패");
+		String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+			.map(FieldError::getDefaultMessage)
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElse("유효성 검사 실패");
 
-        ErrorResponse errorResponse = new ErrorResponse(errorMessage, request.getServletPath());
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
+		ErrorResponse errorResponse = new ErrorResponse(errorMessage, request.getServletPath());
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
 
-    // Auth 관련 새로운 예외 핸들러들
-    @ExceptionHandler(TokenRequiredException.class)
-    public ResponseEntity<ErrorResponse> handleTokenRequiredException(TokenRequiredException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
+	// Auth 관련 새로운 예외 핸들러들
+	@ExceptionHandler(TokenRequiredException.class)
+	public ResponseEntity<ErrorResponse> handleTokenRequiredException(TokenRequiredException ex,
+		HttpServletRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
 
-    @ExceptionHandler(InvalidTokenException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidTokenException(InvalidTokenException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
-    }
+	@ExceptionHandler(InvalidTokenException.class)
+	public ResponseEntity<ErrorResponse> handleInvalidTokenException(InvalidTokenException ex,
+		HttpServletRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+		return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+	}
 
-    @ExceptionHandler(TokenAlreadyBlacklistedException.class)
-    public ResponseEntity<ErrorResponse> handleTokenAlreadyBlacklistedException(TokenAlreadyBlacklistedException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
-    }
+	@ExceptionHandler(TokenAlreadyBlacklistedException.class)
+	public ResponseEntity<ErrorResponse> handleTokenAlreadyBlacklistedException(TokenAlreadyBlacklistedException ex,
+		HttpServletRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+		return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+	}
 
-    @ExceptionHandler(EmailAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
-    }
+	@ExceptionHandler(EmailAlreadyExistsException.class)
+	public ResponseEntity<ErrorResponse> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex,
+		HttpServletRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+		return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+	}
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ErrorResponse> handleBadCredentials(HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse("이메일 또는 비밀번호가 일치하지 않습니다.", request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-    }
-    @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUsernameNotFound(HttpServletRequest request) {ErrorResponse errorResponse = new ErrorResponse("이메일 또는 비밀번호가 일치하지 않습니다.", request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-    }
+	@ExceptionHandler(BadCredentialsException.class)
+	public ResponseEntity<ErrorResponse> handleBadCredentials(HttpServletRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse("이메일 또는 비밀번호가 일치하지 않습니다.", request.getRequestURI());
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+	}
 
-    // 좋아요 관련 예외 핸들러 추가
-    @ExceptionHandler(SelfLikeNotAllowedException.class)
-    public ResponseEntity<ErrorResponse> handleSelfLikeNotAllowedException(SelfLikeNotAllowedException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
+	@ExceptionHandler(UsernameNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleUsernameNotFound(HttpServletRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse("이메일 또는 비밀번호가 일치하지 않습니다.", request.getRequestURI());
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+	}
 
-    @ExceptionHandler(FollowNotMySelfException.class)
-    public ResponseEntity<ErrorResponse> handleFollowNotMySelfException(FollowNotMySelfException ex, HttpServletRequest request){
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
-        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
-    }
+	// 좋아요 관련 예외 핸들러 추가
+	@ExceptionHandler(SelfLikeNotAllowedException.class)
+	public ResponseEntity<ErrorResponse> handleSelfLikeNotAllowedException(SelfLikeNotAllowedException ex,
+		HttpServletRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
 
-    @ExceptionHandler(FollowNotLoginException.class)
-    public ResponseEntity<ErrorResponse> handleNotLoginNotFollow(FollowNotLoginException ex,HttpServletRequest request){
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
-        return new ResponseEntity<>(errorResponse,HttpStatus.UNAUTHORIZED);
-    }
-    @ExceptionHandler(FollowerUserExistException.class)
-    public ResponseEntity<ErrorResponse> handleFollowerUserExistException(FollowerUserExistException ex, HttpServletRequest request){
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(),request.getServletPath());
-        return new ResponseEntity<>(errorResponse,HttpStatus.UNAUTHORIZED);
-    }
-    @ExceptionHandler(FollowNotFollowerException.class)
-    public ResponseEntity<ErrorResponse> handleFollowerNotFollowerException(FollowNotFollowerException ex,HttpServletRequest request){
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
-        return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
-    }
-    @ExceptionHandler(FollowsUserDeleteException.class)
-    public ResponseEntity<ErrorResponse> handleFollowsExitsUserException(FollowsUserDeleteException ex,HttpServletRequest request){
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
-        return new ResponseEntity<>(errorResponse,HttpStatus.UNAUTHORIZED);
-    }
-    @ExceptionHandler(FollowsAlreadyFollowingException.class)
-    public ResponseEntity<ErrorResponse> handleFollowerAlreadyFollowingException(FollowsAlreadyFollowingException ex,HttpServletRequest request){
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
-        return new ResponseEntity<>(errorResponse,HttpStatus.UNAUTHORIZED);
-    }
+	@ExceptionHandler(FollowNotMySelfException.class)
+	public ResponseEntity<ErrorResponse> handleFollowNotMySelfException(FollowNotMySelfException ex,
+		HttpServletRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(FollowNotLoginException.class)
+	public ResponseEntity<ErrorResponse> handleNotLoginNotFollow(FollowNotLoginException ex,
+		HttpServletRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+		return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(FollowerUserExistException.class)
+	public ResponseEntity<ErrorResponse> handleFollowerUserExistException(FollowerUserExistException ex,
+		HttpServletRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+		return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(FollowNotFollowerException.class)
+	public ResponseEntity<ErrorResponse> handleFollowerNotFollowerException(FollowNotFollowerException ex,
+		HttpServletRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+		return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler(FollowsUserDeleteException.class)
+	public ResponseEntity<ErrorResponse> handleFollowsExitsUserException(FollowsUserDeleteException ex,
+		HttpServletRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+		return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(FollowsAlreadyFollowingException.class)
+	public ResponseEntity<ErrorResponse> handleFollowerAlreadyFollowingException(FollowsAlreadyFollowingException ex,
+		HttpServletRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), request.getServletPath());
+		return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+	}
+
 }
