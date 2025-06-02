@@ -44,7 +44,7 @@ public class PostService {
     private final CommentService commentService;
     private final LikeService likeService;
 
-    public PostResponseDto save(CustomUserDetails userDetails, CreatePostRequestDto cDto) {
+    public PostResponseDto saveNewPost(CustomUserDetails userDetails, CreatePostRequestDto cDto) {
         //로그인 한 User 엔티티
         User foundUser = getUserOrThrow(userDetails.getUsername());
 
@@ -58,7 +58,7 @@ public class PostService {
         return PostResponseDto.from(savedPost);
     }
 
-    public PostResponseDto update(Long id, CustomUserDetails userDetails, UpdatePostRequestDto uDto) {
+    public PostResponseDto updatePostIfAuthor(Long id, CustomUserDetails userDetails, UpdatePostRequestDto uDto) {
         //로그인 한 User 엔티티
         User foundUser = getUserOrThrow(userDetails.getUsername());
 
@@ -80,7 +80,7 @@ public class PostService {
                 likeRepository.countByTargetTypeAndTargetId(LikeTargetType.POST, id));
     }
 
-    public void softDelete(Long id, CustomUserDetails userDetails) {
+    public void softDeletePostWithOrphans(Long id, CustomUserDetails userDetails) {
         //로그인 한 User 엔티티
         User foundUser = getUserOrThrow(userDetails.getUsername());
 
