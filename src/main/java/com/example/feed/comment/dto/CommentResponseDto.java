@@ -1,13 +1,14 @@
 package com.example.feed.comment.dto;
 
 import com.example.feed.comment.Comment;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentResponseDto {
 
     private Long id;
@@ -15,7 +16,6 @@ public class CommentResponseDto {
     private String userName;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
-
     private long likeCount;
 
 
@@ -33,5 +33,4 @@ public class CommentResponseDto {
                 likeCount
         );
     }
-
 }

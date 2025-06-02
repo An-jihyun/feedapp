@@ -25,12 +25,12 @@ public class CommentController {
 
 
     @PostMapping("/posts/{postId}/comments")
-    public ResponseEntity<ApiResponse<CommentResponseDto>> create(
+    public ResponseEntity<ApiResponse<CommentResponseDto>> createComment(
             @PathVariable Long postId,
             @Valid @RequestBody CreateCommentRequestDto requestDto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        CommentResponseDto responseDto = commentService.createComment(postId, requestDto, userDetails.getUsername());
+        CommentResponseDto responseDto = commentService.saveComment(postId, requestDto, userDetails.getUsername());
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 댓글이 작성되었습니다.", responseDto), HttpStatus.CREATED);
     }
 
@@ -42,7 +42,7 @@ public class CommentController {
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
-        Page<CommentResponseDto> responseDto = commentService.getCommentsByPost(postId, pageable);
+        Page<CommentResponseDto> responseDto = commentService.readCommentsByPost(postId, pageable);
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 댓글이 조회되었습니다.", responseDto), HttpStatus.OK);
     }
 
@@ -53,7 +53,7 @@ public class CommentController {
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
-        Page<CommentResponseDto> responseDto = commentService.getCommentsByUser(userDetails.getUserId(), pageable);
+        Page<CommentResponseDto> responseDto = commentService.readCommentsByUser(userDetails.getUserId(), pageable);
         return new ResponseEntity<>(new ApiResponse<>("내 댓글 목록이 조회되었습니다.", responseDto), HttpStatus.OK);
     }
 
@@ -64,25 +64,28 @@ public class CommentController {
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
-        Page<CommentResponseDto> responseDto = commentService.getCommentsByUser(userId, pageable);
+        Page<CommentResponseDto> responseDto = commentService.readCommentsByUser(userId, pageable);
         return new ResponseEntity<>(new ApiResponse<>("사용자의 댓글 목록이 조회되었습니다.", responseDto), HttpStatus.OK);
     }
 
     @PatchMapping("/comments/{commentId}")
-    public ResponseEntity<ApiResponse<Void>> update(
+    public ResponseEntity<ApiResponse<CommentResponseDto>> updateComment(
             @PathVariable Long commentId,
             @Valid @RequestBody UpdateCommentRequestDto dto,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        commentService.updateComment(commentId, dto, userDetails.getUserId());
-        return new ResponseEntity<>(new ApiResponse<>("정상적으로 댓글이 수정되었습니다.", null), HttpStatus.OK);
+
+        CommentResponseDto updatedDto = commentService.updateCommentContent(commentId, dto, userDetails.getUserId());
+
+        return new ResponseEntity<>(new ApiResponse<>("정상적으로 댓글이 수정되었습니다.", updatedDto), HttpStatus.OK);
     }
 
 
+
     @DeleteMapping("/comments/{commentId}")
-    public ResponseEntity<ApiResponse<Void>> delete(
+    public ResponseEntity<ApiResponse<Void>> deleteComment(
             @PathVariable Long commentId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        commentService.deleteComment(commentId, userDetails.getUserId());
+        commentService.removeComment(commentId, userDetails.getUserId());
         return new ResponseEntity<>(new ApiResponse<>("정상적으로 댓글이 삭제되었습니다.", null), HttpStatus.OK);
     }
 }

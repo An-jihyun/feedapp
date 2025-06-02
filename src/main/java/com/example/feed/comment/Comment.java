@@ -4,12 +4,17 @@ import com.example.feed.common.BaseEntity;
 import com.example.feed.post.Post;
 import com.example.feed.user.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * JPA가 내부적으로 엔티티 객체를 생성할 때 기본 생성자가 필요합니다.
+ * 직접 new로 생성하는 것을 막기 위해 protected로 설정했습니다.
+ */
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
-@NoArgsConstructor
 @Table(name = "comments")
 public class Comment extends BaseEntity {
 
