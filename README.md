@@ -16,7 +16,8 @@
 이 프로젝트는 사용자가 게시물을 작성하고, 댓글을 달고, 좋아요를 누르며, 다른 사용자를 팔로우할 수 있는 소셜 미디어 피드 애플리케이션입니다. Spring Security와 JWT를 활용한 인증/인가 시스템을 구현했으며, Soft Delete 방식으로 데이터를 관리합니다.
 
 ## ERD
-![ERD](ERD1.png)
+<img width="1045" alt="image" src="https://github.com/user-attachments/assets/e2120fce-7d15-4e80-9314-4102c1e5b21e" />
+
 
 ## ✨ 주요 기능
 
