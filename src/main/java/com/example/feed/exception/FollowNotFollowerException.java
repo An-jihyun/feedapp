@@ -1,4 +1,4 @@
-package com.example.feed.exception.follows;
+package com.example.feed.exception;
 
 public class FollowNotFollowerException extends RuntimeException{
     public FollowNotFollowerException(String message){

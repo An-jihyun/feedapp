@@ -1,17 +1,16 @@
 package com.example.feed.auth;
 
 import com.example.feed.auth.dto.LoginRequestDto;
+import com.example.feed.exception.*;
 import com.example.feed.security.TokenBlacklist;
 import com.example.feed.security.TokenBlacklistRepository;
 import com.example.feed.user.User;
-import com.example.feed.exception.EmailAlreadyExistsException;
-import com.example.feed.exception.InvalidTokenException;
-import com.example.feed.exception.TokenAlreadyBlacklistedException;
-import com.example.feed.exception.TokenRequiredException;
 import com.example.feed.security.jwt.JwtTokenProvider;
 import com.example.feed.user.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.ObjectDeletedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,18 +30,28 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-
-    public String login(String email, String password) {
+    // 로그인 로직
+    public String login(String email, String password, HttpServletResponse response) {
         // 이메일/비밀번호로 인증 시도
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, password)
         );
 
+        //해당 이멜로 유저찾고 딜리티드값 좃회시 트루면 탈퇴된 회원입니다라는 예외를 던지기!!!!!!!!!!!!!!!!!
+        User user = userRepository.findByEmail(email).orElseThrow(()-> new UserNotFoundException("유저가 존재하지 않습니다."));
+        if (user.getDeleted()) {
+            throw new UserNotFoundException("탈퇴된 회원입니다.");
+                    //커스텀 예외 만들기!!!!!!!!!!!!!!!!!!!!!
+        }
+
         // 인증 성공 시 SecurityContext에 인증 객체 저장
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // 토큰 발급 (subject로 email 넣음)
-        return jwtTokenProvider.createToken(email);
+        //안지현설명해
+        String token = jwtTokenProvider.createToken(email);
+        response.setHeader("Authorization", token);
+        return token;
     }
 
     // 로그아웃 로직 추가
@@ -73,13 +82,14 @@ public class AuthService {
     public void signup(LoginRequestDto request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+
             throw new EmailAlreadyExistsException("이미 존재하는 이메일입니다: " + request.getEmail());
         }
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         User user = new User(
-                null,
+
                 request.getUserName(),
                 request.getEmail(),
                 encodedPassword

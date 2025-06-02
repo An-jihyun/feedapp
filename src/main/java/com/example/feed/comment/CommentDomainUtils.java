@@ -18,7 +18,7 @@ public class CommentDomainUtils {
 
     //현재 로그인 사용자 조회
     public User getCurrentUser(String email) {
-        return userRepository.findByEmailAndIsDeletedFalse(email)
+        return userRepository.findByEmailAndDeletedFalse(email)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
     }
 
